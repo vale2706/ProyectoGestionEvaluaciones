@@ -15,22 +15,17 @@ public class TestController {
     return "Contenido publico";
   }
 
-  @GetMapping("/user")
   //PreAuthorize verifica si un rol tiene autorizacion antes de acceder a un metodo 
-  @PreAuthorize("hasRole('COORDINADOR') or hasRole('PROFESOR')")
-  public String userAccess() {
-    return "Contenido privado. Datos retornados para el api de usuarios.";
-  }
-
+ 
   @GetMapping("/coor")
   @PreAuthorize("hasRole('COORDINADOR')")
-  public String moderatorAccess() {
-    return "Contenido privado. Datos retornados para el api de moderador.";
+  public String coordinadorAccess() {
+    return "Contenido privado. Datos retornados para el api decoordinador.";
   }
 
   @GetMapping("/prf")
   @PreAuthorize("hasRole('PROFESOR')")
-  public String adminAccess() {
-    return "Contenido privado. Datos retornados para el api de administrador.";
+  public String profesorAccess() {
+    return "Contenido privado. Datos retornados para el api de profesor.";
   }
 }

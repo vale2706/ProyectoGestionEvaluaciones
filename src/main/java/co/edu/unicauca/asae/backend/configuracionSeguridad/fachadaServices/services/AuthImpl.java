@@ -9,7 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.ERole;
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.Role;
@@ -26,8 +26,9 @@ import co.edu.unicauca.asae.backend.configuracionSeguridad.security.services.Use
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 
+@Service
 public class AuthImpl implements AuthInt {
-     @Autowired
+    @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
@@ -72,32 +73,25 @@ public class AuthImpl implements AuthInt {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+            new RuntimeException("Error.Role not valid");
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "coor":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_COORDINADOR)
+                        Role coorRole = roleRepository.findByName(ERole.ROLE_COORDINADOR)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
+                        roles.add(coorRole);
 
                     break;
                     case "prf":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_PROFESOR)
+                        Role prfRole = roleRepository.findByName(ERole.ROLE_PROFESOR)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
+                        roles.add(prfRole);
 
                     break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
                 }
             });
         }
-
         user.setRoles(roles);
         userRepository.save(user);
         return new MessageResponseDTO("Usuario "+user.getUsername()+" creado exitosamente");
