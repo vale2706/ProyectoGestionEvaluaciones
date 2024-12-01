@@ -4,6 +4,7 @@ import co.edu.unicauca.asae.backend.competenciasDePrograma.fachadaServices.DTO.C
 import java.util.List;
 
 public interface ICompetenciaServices {
+    public List<CompetenciaDTO> findAllWithResultados();
     public List<CompetenciaDTO> findAll();
     public CompetenciaDTO findById(Integer idComp);
     public CompetenciaDTO save(CompetenciaDTO comp);

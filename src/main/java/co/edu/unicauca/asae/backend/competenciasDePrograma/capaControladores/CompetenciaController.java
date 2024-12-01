@@ -20,6 +20,11 @@ public class CompetenciaController {
     @Autowired
     private ICompetenciaServices competenciaServices;
 
+    @GetMapping("/resultados")
+    public List<CompetenciaDTO> listarCompetenciasConResultados() {
+        return competenciaServices.findAllWithResultados();
+    }
+
     //Obtener todas las asignaturas
     @GetMapping("/competencia")
     public ResponseEntity<List<CompetenciaDTO>> obtenerCompetencias() {

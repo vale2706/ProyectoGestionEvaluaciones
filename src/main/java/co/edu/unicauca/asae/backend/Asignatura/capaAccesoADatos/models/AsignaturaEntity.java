@@ -32,18 +32,10 @@ public class AsignaturaEntity {
     private List<String> compA;
 
     @OneToOne
-    @JoinColumn(name = "idAsig")
+    @JoinColumn(name = "idAsignatura")
     private ResultadosAprendizajeEntity objRa;
 
     public AsignaturaEntity(){
-        
-    }
-
-    public void vincularRA(){
-
-    }
-
-    public void vincularCompetencias(){
         
     }
 }

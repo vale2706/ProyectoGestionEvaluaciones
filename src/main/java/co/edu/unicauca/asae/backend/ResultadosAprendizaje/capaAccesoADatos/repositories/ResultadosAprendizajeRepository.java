@@ -2,6 +2,7 @@ package co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.repo
 
 import java.util.ArrayList;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.models.ResultadosAprendizajeEntity;
@@ -13,6 +14,16 @@ public class ResultadosAprendizajeRepository {
 
     public ResultadosAprendizajeRepository(){
         this.listaRA = new ArrayList<ResultadosAprendizajeEntity>();
+    }
+
+    // Implementación del método findResultadoWithCompetencia
+    public ResultadosAprendizajeEntity findResultadoWithCompetencia(@Param("id") Integer id) {
+        for (ResultadosAprendizajeEntity ra : listaRA) {
+            if (ra.getId().equals(id)) {
+                return ra; // Devuelve el resultado de aprendizaje que coincide con el ID
+            }
+        }
+        return null; // Devuelve null si no se encuentra
     }
 
     //Obtener todos los RA

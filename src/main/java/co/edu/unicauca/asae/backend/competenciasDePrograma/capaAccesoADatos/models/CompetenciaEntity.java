@@ -1,12 +1,16 @@
 package co.edu.unicauca.asae.backend.competenciasDePrograma.capaAccesoADatos.models;
 
+import java.util.List;
+
+
 import co.edu.unicauca.asae.backend.Asignatura.capaAccesoADatos.models.AsignaturaEntity;
+import co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.models.ResultadosAprendizajeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,8 +31,8 @@ public class CompetenciaEntity {
     private Nivel nivel;
     private String descripcion;
 
-    @OneToOne
-    @JoinColumn(name = "idAsignatura")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "objCompetencia")
+    private List<ResultadosAprendizajeEntity> resultadosAprendizajes;
     private AsignaturaEntity objAsignatura;
 
     public enum Nivel{

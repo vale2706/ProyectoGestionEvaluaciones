@@ -1,6 +1,7 @@
 package co.edu.unicauca.asae.backend.competenciasDePrograma.fachadaServices.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import co.edu.unicauca.asae.backend.competenciasDePrograma.capaAccesoADatos.repo
 import co.edu.unicauca.asae.backend.competenciasDePrograma.fachadaServices.DTO.CompetenciaDTO;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
+import co.edu.unicauca.asae.backend.ResultadosAprendizaje.fachadaServices.DTO.ResultadosAprendizajeDTO;
 
 @Service
 public class CompetenciaServicesImpl implements ICompetenciaServices {
@@ -100,5 +102,23 @@ public class CompetenciaServicesImpl implements ICompetenciaServices {
             throw objException;
         }
         return bandera;
+    }
+
+    @Override
+    public List<CompetenciaDTO> findAllWithResultados(){
+        List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAll();
+        List<CompetenciaDTO> compDTOs = this.modelMapper.map(listaComp, new TypeToken<List<CompetenciaDTO>>(){}.getType());
+
+        for(CompetenciaDTO competenciaDTO : compDTOs){
+            List<ResultadosAprendizajeDTO> resultadosDTOs = this.modelMapper.map(
+            listaComp.stream()
+                .filter(comp -> comp.getIdComp().equals(competenciaDTO.getIdcomp()))
+                .flatMap(comp -> comp.getResultadosAprendizajes().stream())
+                .collect(Collectors.toList()),
+            new TypeToken<List<ResultadosAprendizajeDTO>>(){}.getType()
+            );
+            competenciaDTO.setResultadosAprendizajes(resultadosDTOs);
+        }
+        return compDTOs;
     }
 }
