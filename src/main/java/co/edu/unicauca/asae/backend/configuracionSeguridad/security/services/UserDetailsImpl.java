@@ -10,22 +10,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.User;
 
+//Esta clase encapsula los detalles del usuario autenticado
 public class UserDetailsImpl implements UserDetails {
   private static final long serialVersionUID = 1L;
 
   private Long id;
-
   private String username;
-
   private String email;
 
   @JsonIgnore
   private String password;
 
-  private Collection<? extends GrantedAuthority> authorities;
+  private Collection<? extends GrantedAuthority> authorities;//ROLES
 
   public UserDetailsImpl(Long id, String username, String email, String password,
       Collection<? extends GrantedAuthority> authorities) {
@@ -61,12 +59,12 @@ public class UserDetailsImpl implements UserDetails {
   public String getEmail() {
     return email;
   }
-
+  //obtiene la contraseña encriptada
   @Override
   public String getPassword() {
     return password;
   }
-
+  //obtiene el usuario encriptado
   @Override
   public String getUsername() {
     return username;
