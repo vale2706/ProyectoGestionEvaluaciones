@@ -1,4 +1,4 @@
-package co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.estructuraExcepciones;
+package co.edu.unicauca.asae.backend.ControladorExcepciones.estructuraExcepciones;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

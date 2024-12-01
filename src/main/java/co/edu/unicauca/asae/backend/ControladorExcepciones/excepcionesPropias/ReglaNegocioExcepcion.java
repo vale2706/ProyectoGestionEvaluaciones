@@ -1,6 +1,6 @@
-package co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias;
+package co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias;
 
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.estructuraExcepciones.CodigoError;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.estructuraExcepciones.CodigoError;
 
 public class ReglaNegocioExcepcion  extends GestionAsignaturaRuntimeException{
     

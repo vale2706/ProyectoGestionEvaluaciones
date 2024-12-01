@@ -1,14 +1,13 @@
-package co.edu.unicauca.asae.backend.Asignatura.fachadaServices.mapper;
+package co.edu.unicauca.asae.backend.Usuario.fachadaServices.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class mapper {
+public class mapperUsuario {
     @Bean
-    public ModelMapper crearMapeador() {
-        System.out.println("Ejecución del método");
+    public ModelMapper modelMapper(){
         return new ModelMapper();
     }
 }

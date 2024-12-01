@@ -8,9 +8,9 @@ import org.modelmapper.TypeToken;
 
 import co.edu.unicauca.asae.backend.Asignatura.capaAccesoADatos.models.AsignaturaEntity;
 import co.edu.unicauca.asae.backend.Asignatura.capaAccesoADatos.repositories.AsignaturaRepository;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import co.edu.unicauca.asae.backend.Asignatura.fachadaServices.DTO.AsignaturaDTO;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 @Service
 public class AsignaturaServiceImpl implements IAsignaturaService {
@@ -36,7 +36,7 @@ public class AsignaturaServiceImpl implements IAsignaturaService {
     public AsignaturaDTO findById(Integer idAsignatura) {
         AsignaturaEntity objAsignatura = this.servicioAccesoBaseDatos.findById(idAsignatura);
         if (objAsignatura == null) {
-            throw new EntidadNoExisteException("Error, la boleta con id " + idAsignatura + " no existe");
+            throw new EntidadNoExisteException("Error, la Asignatura con id " + idAsignatura + " no existe");
         }
         AsignaturaDTO boletaCineDTO = this.modelMapper.map(objAsignatura, AsignaturaDTO.class);
         return boletaCineDTO;

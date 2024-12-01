@@ -1,18 +1,19 @@
-package co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones;
+package co.edu.unicauca.asae.backend.ControladorExcepciones.controladorExcepciones;
 
 import java.util.Locale;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.estructuraExcepciones.Error;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.estructuraExcepciones.CodigoError;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.estructuraExcepciones.ErrorUtils;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias.EntidadYaExisteException;
-import co.edu.unicauca.asae.backend.Asignatura.capaControladores.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.estructuraExcepciones.CodigoError;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.estructuraExcepciones.Error;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.estructuraExcepciones.ErrorUtils;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadYaExisteException;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 @ControllerAdvice
 public class RestApiExceptionHandler {
