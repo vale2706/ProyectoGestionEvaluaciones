@@ -4,7 +4,7 @@ import java.util.List;
 
 import co.edu.unicauca.asae.backend.Docente.fachadaServices.DTO.DocenteDTO;
 
-public interface IDocenteService {
+public interface IDocenteServices {
     public List<DocenteDTO> findAll();
     public DocenteDTO findById(Integer idDocente);
     public DocenteDTO save(DocenteDTO docente);

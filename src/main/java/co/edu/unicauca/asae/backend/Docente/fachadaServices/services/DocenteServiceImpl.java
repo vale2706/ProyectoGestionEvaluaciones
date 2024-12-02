@@ -11,7 +11,7 @@ import co.edu.unicauca.asae.backend.Docente.fachadaServices.DTO.DocenteDTO;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
-public class DocenteServiceImpl implements IDocenteService {
+public class DocenteServiceImpl implements IDocenteServices {
     private DocenteRepository servicioAccesoBaseDatos;
     private ModelMapper modelMapper;
 

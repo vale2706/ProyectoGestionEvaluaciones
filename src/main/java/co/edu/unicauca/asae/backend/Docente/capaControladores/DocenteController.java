@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import co.edu.unicauca.asae.backend.Docente.fachadaServices.DTO.DocenteDTO;
-import co.edu.unicauca.asae.backend.Docente.fachadaServices.services.IDocenteService;
+import co.edu.unicauca.asae.backend.Docente.fachadaServices.services.IDocenteServices;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
 @RestController
@@ -17,7 +17,7 @@ import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.En
         RequestMethod.PUT })
 public class DocenteController {
     @Autowired
-    private IDocenteService docenteservice;
+    private IDocenteServices docenteservice;
 
     //Obtener todas las docentes
     @GetMapping("/docente")
