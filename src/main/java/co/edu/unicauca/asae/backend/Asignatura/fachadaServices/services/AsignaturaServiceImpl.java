@@ -38,8 +38,8 @@ public class AsignaturaServiceImpl implements IAsignaturaService {
         if (objAsignatura == null) {
             throw new EntidadNoExisteException("Error, la Asignatura con id " + idAsignatura + " no existe");
         }
-        AsignaturaDTO boletaCineDTO = this.modelMapper.map(objAsignatura, AsignaturaDTO.class);
-        return boletaCineDTO;
+        AsignaturaDTO asignaturaDTO = this.modelMapper.map(objAsignatura, AsignaturaDTO.class);
+        return asignaturaDTO;
     }
 
     @Override
