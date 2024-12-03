@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -17,108 +18,37 @@ import co.edu.unicauca.asae.backend.ResultadosAprendizaje.fachadaServices.DTO.Re
 @Service
 public class CompetenciaServicesImpl implements ICompetenciaServices {
 
-    private CompetenciaRepository servicioAccesoBaseDatos;
-    private ModelMapper modelMapper;
+     @Autowired
+    private CompetenciaRepository competenciaRepository;
 
-    public CompetenciaServicesImpl(CompetenciaRepository servicioAccesoBaseDatos, ModelMapper modelMapper) {
-        this.servicioAccesoBaseDatos = servicioAccesoBaseDatos;
-        this.modelMapper = modelMapper;
+    public List<CompetenciaEntity> findAll() {
+        return competenciaRepository.findAll();
     }
 
-    @Override
-    public List<CompetenciaDTO> findAll() {
-        List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAll();
-        List<CompetenciaDTO> compDTOs = listaComp.stream()
-                .map(entity -> this.modelMapper.map(entity, CompetenciaDTO.class))
-                .collect(Collectors.toList());
-        return compDTOs;
+    public Optional<CompetenciaEntity> findById(Integer id) {
+        return competenciaRepository.findById(id);
     }
 
-    @Override
-    public CompetenciaDTO findById(Integer idComp) {
-        CompetenciaEntity objCompetencia = this.servicioAccesoBaseDatos.findById(idComp);
-        if (objCompetencia == null) {
-            throw new EntidadNoExisteException("Error, la competencia con id " + idComp + "no existe");
+    public CompetenciaEntity save(CompetenciaEntity competencia) {
+        return competenciaRepository.save(competencia);
+    }
+
+    public CompetenciaEntity update(Integer id, CompetenciaEntity competencia) {
+        Optional<CompetenciaEntity> existingCompetencia = competenciaRepository.findById(id);
+        if (existingCompetencia.isPresent()) {
+            CompetenciaEntity updatedCompetencia = existingCompetencia.get();
+            updatedCompetencia.setNombre(competencia.getNombre());
+            // Actualiza otros campos si es necesario...
+            return competenciaRepository.save(updatedCompetencia);
         }
-        CompetenciaDTO objCompDTOs = this.modelMapper.map(objCompetencia, CompetenciaDTO.class);
-        return objCompDTOs;
+        return null; // Maneja este caso según tu lógica (ej. lanza una excepción o devuelve un error).
     }
 
-    @Override
-    public CompetenciaDTO save(CompetenciaDTO comp) {
-        CompetenciaDTO competenciaDTO = null;
-        if (this.servicioAccesoBaseDatos.existeCompetencia(comp.getIdcomp()) == true) {
-            System.out.println("ID de la Competencia " + comp.getIdcomp());
-
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                    "Exíste una Competencia con ese ID, no se permite crear Competencia");
-            throw objExcepcion;
-        } else {
-            CompetenciaEntity competenciaEntity = this.modelMapper.map(comp, CompetenciaEntity.class);
-
-            CompetenciaEntity competenciaEntityGuardada = this.servicioAccesoBaseDatos.save(competenciaEntity);
-            competenciaDTO = this.modelMapper.map(competenciaEntityGuardada, CompetenciaDTO.class);
+    public boolean deleteById(Integer id) {
+        if (competenciaRepository.existsById(id)) {
+            competenciaRepository.deleteById(id);
+            return true;
         }
-        return competenciaDTO;
-    }
-
-    @Override
-    public CompetenciaDTO update(Integer idComp, CompetenciaDTO comp) {
-
-        CompetenciaDTO competenciaDTO = null;
-
-        if (this.servicioAccesoBaseDatos.existeCompetencia(idComp)) {
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idComp).getIdComp();
-            Integer idNuevo = comp.getIdcomp();
-            if (!idAnterior.equals(idNuevo) && this.servicioAccesoBaseDatos.existeCompetencia(comp.getIdcomp())) {
-                ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                        "Existe una competencia con el codigo registrado, no se permite actualizar");
-                throw objExcepcion;
-            } else {
-                CompetenciaEntity compAux = new CompetenciaEntity();
-                compAux.setIdComp(comp.getIdcomp());
-                compAux.setDescripcion(comp.getDescripcion());
-                compAux.setNivel(CompetenciaEntity.Nivel.valueOf(comp.getNivel().name()));
-
-                CompetenciaEntity objCompetenciaAct = this.servicioAccesoBaseDatos.update(idComp, compAux);
-                competenciaDTO = this.modelMapper.map(objCompetenciaAct, CompetenciaDTO.class);
-            }
-        } else {
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                    "Error, la competencia a actualizar no existe");
-            throw objException;
-        }
-        return competenciaDTO;
-    }
-
-    @Override
-    public boolean delete(Integer idComp) {
-        boolean bandera = false;
-        if (this.servicioAccesoBaseDatos.existeCompetencia(idComp)) {
-            bandera = this.servicioAccesoBaseDatos.deleteById(idComp);
-        } else {
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                    "Error, la competencia a eliminar no existe");
-            throw objException;
-        }
-        return bandera;
-    }
-
-    @Override
-    public List<CompetenciaDTO> findAllWithResultados() {
-        List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAll();
-        List<CompetenciaDTO> compDTOs = listaComp.stream()
-                .map(entity -> this.modelMapper.map(entity, CompetenciaDTO.class))
-                .collect(Collectors.toList());
-
-        for (CompetenciaDTO competenciaDTO : compDTOs) {
-            List<ResultadosAprendizajeDTO> resultadosDTOs = listaComp.stream()
-                    .filter(comp -> comp.getIdComp().equals(competenciaDTO.getIdcomp()))
-                    .flatMap(comp -> comp.getResultadosAprendizajes().stream())
-                    .map(entity -> this.modelMapper.map(entity, ResultadosAprendizajeDTO.class))
-                    .collect(Collectors.toList());
-            competenciaDTO.setResultadosAprendizajes(resultadosDTOs);
-        }
-        return compDTOs;
+        return false;
     }
 }

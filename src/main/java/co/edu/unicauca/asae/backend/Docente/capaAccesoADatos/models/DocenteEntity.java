@@ -25,7 +25,7 @@ import co.edu.unicauca.asae.backend.Asig_Com_Docente.capaAccesoADatos.models.Asi
 @Table(name = "Docente")
 public class DocenteEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
