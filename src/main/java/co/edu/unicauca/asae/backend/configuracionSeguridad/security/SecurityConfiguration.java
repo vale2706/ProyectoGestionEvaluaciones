@@ -60,7 +60,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/auth/signup","/api/auth/signin").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/api/gestiondeAsignaturas/**").hasRole("PROFESOR")
-                .requestMatchers("/api/**").hasRole("COORDINADOR")
+                //.requestMatchers("/api/**").hasRole("COORDINADOR")
                 .anyRequest().authenticated()
             );
 

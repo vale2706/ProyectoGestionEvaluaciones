@@ -15,13 +15,13 @@ import lombok.Setter;
 @Table(name = "Asignatura")
 public class AsignaturaEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String nombre;
     private String descripcion;
     private int creditos;
     private int semestre;
-
     @ElementCollection
     private List<String> compA;
 

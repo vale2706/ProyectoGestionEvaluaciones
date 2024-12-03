@@ -5,9 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
@@ -18,99 +16,83 @@ import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Repo
 
 @Service
 public class DocenteServicesImpl implements IDocenteServices {
-    
 
-    private DocenteRepository servicioAccesoBaseDatos;
+    private DocenteRepository docenteRepository;
     private ModelMapper modelMapper;
-   
+
     @Autowired
     private UserRepository userRepository;
 
-    public DocenteServicesImpl(DocenteRepository servicioAccesoBaseDatos,  ModelMapper modelMapper){
-        this.servicioAccesoBaseDatos = servicioAccesoBaseDatos;
+    public DocenteServicesImpl(DocenteRepository docenteRepository, ModelMapper modelMapper) {
+        this.docenteRepository = docenteRepository;
         this.modelMapper = modelMapper;
     }
 
-   @Override
-public List<DocenteDTO> findAll() {
-    List<DocenteEntity> listaDocente = this.servicioAccesoBaseDatos.findAll();
-    List<DocenteDTO> docenteDTOs = listaDocente.stream()
-        .map(entity -> this.modelMapper.map(entity, DocenteDTO.class))
-        .collect(Collectors.toList());
-    return docenteDTOs;
-}
-
     @Override
-    public DocenteDTO findById(Integer idDocente){
-        DocenteEntity objCoordi = this.servicioAccesoBaseDatos.findById(idDocente);
-        if(objCoordi == null){
-            throw new EntidadNoExisteException("Error, la Docente con id "+ idDocente + "no existe");
-        }
-        DocenteDTO objCompDTOs = this.modelMapper.map(objCoordi, DocenteDTO.class);
-        return objCompDTOs;
+    public List<DocenteDTO> findAll() {
+        List<DocenteEntity> listaDocente = this.docenteRepository.findAll();
+        return listaDocente.stream()
+                .map(entity -> this.modelMapper.map(entity, DocenteDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public DocenteDTO save(DocenteDTO docente) {
-        DocenteDTO docenteDTO = null;
+    public DocenteDTO findById(Integer idDocente) {
+        DocenteEntity docenteEntity = this.docenteRepository.findById(idDocente).orElse(null);
+        if (docenteEntity == null) {
+            throw new EntidadNoExisteException("Error, el Docente con id " + idDocente + " no existe");
+        }
+        return this.modelMapper.map(docenteEntity, DocenteDTO.class);
+    }
 
+    @Override
+    public DocenteDTO save(DocenteDTO docenteDTO) {
         // Verificar si el correo ya existe
-        if (userRepository.existsByEmail(docente.getEmail())) {
-            System.out.println("El correo del Docente " + docente.getEmail());
-            throw new ReglaNegocioExcepcion("Exíste un Docente con ese Correo, no se permite crear Docente");
+        if (userRepository.existsByEmail(docenteDTO.getEmail())) {
+            throw new ReglaNegocioExcepcion("Ya existe un Docente con ese correo, no se permite crear Docente");
         }
 
         // Convertir el DTO a entidad
-        DocenteEntity docenteEntity = this.modelMapper.map(docente, DocenteEntity.class);
+        DocenteEntity docenteEntity = this.modelMapper.map(docenteDTO, DocenteEntity.class);
         // Guardar en la base de datos
-        DocenteEntity docenteEntityGuardada = this.servicioAccesoBaseDatos.save(docenteEntity);
+        DocenteEntity docenteEntityGuardado = this.docenteRepository.save(docenteEntity);
         // Convertir la entidad guardada en DTO
-        docenteDTO = this.modelMapper.map(docenteEntityGuardada, DocenteDTO.class);
-
-        return docenteDTO;
+        return this.modelMapper.map(docenteEntityGuardado, DocenteDTO.class);
     }
 
     @Override
-    public DocenteDTO update(Integer idDocente, DocenteDTO docente){
-        
-        DocenteDTO DocenteDTO = null;
-
-        if(userRepository.existsByEmail(docente.getEmail())){
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idDocente).getId();
-            Integer idNuevo = docente.getId();
-            if(idAnterior.equals(idNuevo) == false && userRepository.existsByEmail(docente.getEmail())){
-                ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                    "Existe un Docente con el correo registrado, no se permite actualizar");
-                throw objExcepcion;
-            }else{
-                DocenteEntity docenteAux = new DocenteEntity();
-                docenteAux.setId(docente.getId());
-                docenteAux.setNombreCompleto(docente.getNombreCompleto());
-                docenteAux.setTipoId(DocenteEntity.TipoId.valueOf(docente.getTipoId().name()));
-                docenteAux.setTipoDocente(DocenteEntity.TipoDocente.valueOf(docente.getTipoDocente().name()));
-                
-
-                DocenteEntity objDocenteAct = this.servicioAccesoBaseDatos.update(idDocente, docenteAux);
-                DocenteDTO = this.modelMapper.map(objDocenteAct, DocenteDTO.class);
-            }
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, el Docente a actualizar no existe");
-            throw objException;
+    public DocenteDTO update(Integer idDocente, DocenteDTO docenteDTO) {
+        // Verificar si el docente existe
+        DocenteEntity existingDocente = this.docenteRepository.findById(idDocente).orElse(null);
+        if (existingDocente == null) {
+            throw new EntidadNoExisteException("Error, el Docente con id " + idDocente + " no existe");
         }
-        return DocenteDTO;
+
+        // Verificar si el correo ya está registrado
+        if (userRepository.existsByEmail(docenteDTO.getEmail()) && !existingDocente.getEmail().equals(docenteDTO.getEmail())) {
+            throw new ReglaNegocioExcepcion("Ya existe un Docente con ese correo, no se permite actualizar");
+        }
+
+        // Convertir el DTO a entidad
+        DocenteEntity docenteEntity = this.modelMapper.map(docenteDTO, DocenteEntity.class);
+        // Establecer el ID para la actualización
+        docenteEntity.setId(idDocente);
+
+        // Guardar el docente actualizado
+        DocenteEntity docenteEntityActualizado = this.docenteRepository.save(docenteEntity);
+
+        return this.modelMapper.map(docenteEntityActualizado, DocenteDTO.class);
     }
 
     @Override
-    public boolean delete(Integer idDocente){
-        boolean bandera = false;
-        if (this.servicioAccesoBaseDatos.existeDocente(idDocente) == true) {
-            bandera = this.servicioAccesoBaseDatos.deleteById(idDocente);
-        } else {
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                    "Error, el Docente a eliminar no existe");
-            throw objException;
+    public boolean delete(Integer idDocente) {
+        // Verificar si el docente existe
+        if (!this.docenteRepository.existsById(idDocente)) {
+            throw new EntidadNoExisteException("Error, el Docente con id " + idDocente + " no existe");
         }
-        return bandera;
+
+        // Eliminar el docente
+        this.docenteRepository.deleteById(idDocente);
+        return true;
     }
 }
