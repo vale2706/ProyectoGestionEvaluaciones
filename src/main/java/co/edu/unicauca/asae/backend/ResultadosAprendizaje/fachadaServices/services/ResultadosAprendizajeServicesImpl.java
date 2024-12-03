@@ -1,11 +1,11 @@
 package co.edu.unicauca.asae.backend.ResultadosAprendizaje.fachadaServices.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.reflect.TypeToken;
 
 import co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.models.ResultadosAprendizajeEntity;
 import co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.repositories.ResultadosAprendizajeRepository;
@@ -21,14 +21,14 @@ public class ResultadosAprendizajeServicesImpl implements IResultadosAprendizaje
         this.servicioAccesoBaseDatos = servicioAccesoBaseDatos;
         this.modelMapper = modelMapper;
     }
-
-    @Override
-    public List<ResultadosAprendizajeDTO> findAll(){
-        List<ResultadosAprendizajeEntity> listaRa = this.servicioAccesoBaseDatos.findAll();
-        List<ResultadosAprendizajeDTO> raDTOs = this.modelMapper.map(listaRa, new TypeToken<List<ResultadosAprendizajeDTO>>(){
-        }.getType());
-        return raDTOs;
-    }
+@Override
+public List<ResultadosAprendizajeDTO> findAll() {
+    List<ResultadosAprendizajeEntity> listaRa = this.servicioAccesoBaseDatos.findAll();
+    List<ResultadosAprendizajeDTO> raDTOs = listaRa.stream()
+        .map(entity -> this.modelMapper.map(entity, ResultadosAprendizajeDTO.class))
+        .collect(Collectors.toList());
+    return raDTOs;
+}
 
     @Override
     public ResultadosAprendizajeDTO findById(Integer idRa){
