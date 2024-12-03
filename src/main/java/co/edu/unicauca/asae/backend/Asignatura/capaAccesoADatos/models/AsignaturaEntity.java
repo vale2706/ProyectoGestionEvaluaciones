@@ -26,7 +26,7 @@ public class AsignaturaEntity {
     private List<String> compA;
 
     @OneToOne
-    @JoinColumn(name = "objRa_id")
+    @JoinColumn(name = "idRA")
     private ResultadosAprendizajeEntity objRa;
 
     @OneToMany(fetch=FetchType.EAGER)

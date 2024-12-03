@@ -14,9 +14,9 @@ import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.Re
 
 @Service
 public class AsignaturaServiceImpl implements IAsignaturaService {
-    
-    private AsignaturaRepository servicioAccesoBaseDatos;
-    private ModelMapper modelMapper;
+
+    private final AsignaturaRepository servicioAccesoBaseDatos;
+    private final ModelMapper modelMapper;
 
     public AsignaturaServiceImpl(AsignaturaRepository servicioAccesoBaseDatos, ModelMapper modelMapper) {
         this.servicioAccesoBaseDatos = servicioAccesoBaseDatos;
@@ -25,86 +25,54 @@ public class AsignaturaServiceImpl implements IAsignaturaService {
 
     @Override
     public List<AsignaturaDTO> findAll() {
-        List<AsignaturaEntity> listaAsignatura = this.servicioAccesoBaseDatos.findAll();
-        List<AsignaturaDTO> AsignaturaDTOs = this.modelMapper.map(listaAsignatura,
-                new TypeToken<List<AsignaturaDTO>>() {
-                }.getType());
-        return AsignaturaDTOs;
+        List<AsignaturaEntity> listaAsignatura = servicioAccesoBaseDatos.findAll();
+        return modelMapper.map(listaAsignatura, new TypeToken<List<AsignaturaDTO>>() {}.getType());
     }
 
     @Override
     public AsignaturaDTO findById(Integer idAsignatura) {
-        AsignaturaEntity objAsignatura = this.servicioAccesoBaseDatos.findById(idAsignatura);
-        if (objAsignatura == null) {
-            throw new EntidadNoExisteException("Error, la Asignatura con id " + idAsignatura + " no existe");
-        }
-        AsignaturaDTO asignaturaDTO = this.modelMapper.map(objAsignatura, AsignaturaDTO.class);
-        return asignaturaDTO;
+        AsignaturaEntity objAsignatura = servicioAccesoBaseDatos.findById(idAsignatura)
+                .orElseThrow(() -> new EntidadNoExisteException("Error, la Asignatura con id " + idAsignatura + " no existe"));
+        return modelMapper.map(objAsignatura, AsignaturaDTO.class);
     }
 
     @Override
-    public AsignaturaDTO save(AsignaturaDTO asignatura){
-        AsignaturaDTO asignaturaDTO = null;
-        
-        if(this.servicioAccesoBaseDatos.existeAsignatura(asignatura.getId()) == true){
-            System.out.println("ID de la asignatura"+asignatura.getId());
-
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                "Exíste una Asignatura con ese ID, no se permite crear Asignatura");
-            throw objExcepcion;
-        }else{
-            AsignaturaEntity asignaturaEntity = this.modelMapper.map(asignatura, AsignaturaEntity.class);
-
-            AsignaturaEntity asignaturaEntityGuardada = this.servicioAccesoBaseDatos.save(asignaturaEntity);
-            asignaturaDTO = this.modelMapper.map(asignaturaEntityGuardada, AsignaturaDTO.class);
+    public AsignaturaDTO save(AsignaturaDTO asignatura) {
+        if (servicioAccesoBaseDatos.existsById(asignatura.getId())) {
+            throw new ReglaNegocioExcepcion("Existe una Asignatura con ese ID, no se permite crear la Asignatura");
         }
-        return asignaturaDTO;
+
+        AsignaturaEntity asignaturaEntity = modelMapper.map(asignatura, AsignaturaEntity.class);
+        AsignaturaEntity asignaturaEntityGuardada = servicioAccesoBaseDatos.save(asignaturaEntity);
+        return modelMapper.map(asignaturaEntityGuardada, AsignaturaDTO.class);
     }
 
     @Override
-    public AsignaturaDTO update(Integer idAsignatura, AsignaturaDTO asignatura){
+    public AsignaturaDTO update(Integer idAsignatura, AsignaturaDTO asignatura) {
+        AsignaturaEntity asignaturaExistente = servicioAccesoBaseDatos.findById(idAsignatura)
+                .orElseThrow(() -> new EntidadNoExisteException("Error, la asignatura a actualizar no existe"));
 
-        AsignaturaDTO asignaturaDTO = null;
-
-        if(this.servicioAccesoBaseDatos.existeAsignatura(idAsignatura) == true){
-
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idAsignatura).getId();
-            Integer idNuevo = asignatura.getId();
-            if(idAnterior.equals(idNuevo) == false && this.servicioAccesoBaseDatos.existeAsignatura(asignatura.getId()) == true){
-                ReglaNegocioExcepcion objException = new ReglaNegocioExcepcion(
-                    "Existe una asignatura con el codigo registrado, no se permite actualizar");
-                throw objException;
-            }else{
-                AsignaturaEntity asignaturaAux = new AsignaturaEntity();
-                asignaturaAux.setId(asignatura.getId());
-                asignaturaAux.setNombre(asignatura.getNombre());
-                asignaturaAux.setDescripcion(asignatura.getDescripcion());
-                asignaturaAux.setCreditos(asignatura.getCreditos());
-                asignaturaAux.setSemestre(asignatura.getSemestre());
-                asignaturaAux.setCompA(asignatura.getCompA());
-
-                AsignaturaEntity objAsignaturaAct = this.servicioAccesoBaseDatos.update(idAsignatura, asignaturaAux);
-                asignaturaDTO = this.modelMapper.map(objAsignaturaAct, AsignaturaDTO.class);
-            }
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, la asignatura a actualizar no existe");
-            throw objException;
+        if (!idAsignatura.equals(asignatura.getId()) && servicioAccesoBaseDatos.existsById(asignatura.getId())) {
+            throw new ReglaNegocioExcepcion("Existe una asignatura con el código registrado, no se permite actualizar");
         }
-        return asignaturaDTO;
+
+        asignaturaExistente.setNombre(asignatura.getNombre());
+        asignaturaExistente.setDescripcion(asignatura.getDescripcion());
+        asignaturaExistente.setCreditos(asignatura.getCreditos());
+        asignaturaExistente.setSemestre(asignatura.getSemestre());
+        asignaturaExistente.setCompA(asignatura.getCompA());
+
+        AsignaturaEntity asignaturaActualizada = servicioAccesoBaseDatos.save(asignaturaExistente);
+        return modelMapper.map(asignaturaActualizada, AsignaturaDTO.class);
     }
 
     @Override
-    public boolean delete(Integer idAsignatura){
-
-        boolean bandera = false;
-        if(this.servicioAccesoBaseDatos.existeAsignatura(idAsignatura) == true){
-            bandera = this.servicioAccesoBaseDatos.deleteById(idAsignatura);
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, la asignatura a eliminar no existe");
-            throw objException;
+    public boolean delete(Integer idAsignatura) {
+        if (!servicioAccesoBaseDatos.existsById(idAsignatura)) {
+            throw new EntidadNoExisteException("Error, la asignatura a eliminar no existe");
         }
-        return bandera;
+
+        servicioAccesoBaseDatos.deleteById(idAsignatura);
+        return true;
     }
 }
