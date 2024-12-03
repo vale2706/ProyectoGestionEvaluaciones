@@ -57,25 +57,16 @@ public class SecurityConfiguration {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Rutas accesibles para todos
                 .requestMatchers("/api/auth/signup","/api/auth/signin").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
-                
-                // Rutas específicas para "Profesor"
                 .requestMatchers("/api/gestiondeAsignaturas/**").hasRole("PROFESOR")
-                
-                // Rutas específicas para "Coordinador" (incluye acceso total)
                 .requestMatchers("/api/**").hasRole("COORDINADOR")
-                
-                // Cualquier otra solicitud debe estar autenticada
                 .anyRequest().authenticated()
             );
 
         http.authenticationProvider(authenticationProvider());
-
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }

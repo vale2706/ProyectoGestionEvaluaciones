@@ -27,7 +27,7 @@ public class ResultadosAprendizajeEntity {
 
     private String descripcion;
 
-    // Añadir la anotación @ManyToOne
+
     @ManyToOne
     @JoinColumn(name = "idAsignatura", nullable = false)
     private AsignaturaEntity objAsignatura;
@@ -36,9 +36,7 @@ public class ResultadosAprendizajeEntity {
     @JoinColumn(name = "idCompetencia", nullable = false)
     private CompetenciaEntity objCompetencia;
 
-    public ResultadosAprendizajeEntity() {
-    }
 
-    public void type() {
+    public ResultadosAprendizajeEntity() {
     }
 }

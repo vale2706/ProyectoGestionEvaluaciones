@@ -51,7 +51,7 @@ public class ResultadosAprendizajeRepository {
         System.out.println("Invocando a actualizar Resultados de Aprendizaje...");
         ResultadosAprendizajeEntity objRa = null;
         for(int i = 0; i < this.listaRA.size(); i++){
-            if(this.listaRA.get(i).getId() == idRA){
+            if(this.listaRA.get(i).getId().equals(idRA)){
                 this.listaRA.set(i, ra);
                 objRa = ra;
                 break;
@@ -65,7 +65,7 @@ public class ResultadosAprendizajeRepository {
         boolean bandera = false;
 
         for(int i = 0; i < this.listaRA.size(); i++){
-            if(this.listaRA.get(i).getId() == idRa){
+            if(this.listaRA.get(i).getId().equals(idRa)){
                 this.listaRA.remove(i);
                 bandera = true;
                 break;
