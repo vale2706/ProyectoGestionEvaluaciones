@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadYaExisteException;
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.ERole;
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.Role;
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Entidades.User;
@@ -43,31 +45,49 @@ public class AuthImpl implements AuthInt {
     @Autowired
     PasswordEncoder encoder;
 
-
     @Override
     public JwtResponseDTO authenticateUser(LoginRequestDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();    
-        List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
 
-        return new JwtResponseDTO(jwt, 
-        userDetails.getId(), 
-        userDetails.getUsername(), 
-        userDetails.getEmail(), 
-        roles);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return new JwtResponseDTO(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles);
     }
 
     @Override
     public MessageResponseDTO registerUser(SignupRequestDTO signUpRequest) {
-       
-        User user = new User(signUpRequest.getUsername(),signUpRequest.getEmail(),encoder.encode(signUpRequest.getPassword()));
+        // Validar que los campos requeridos no sean nulos o vacíos
+        if (signUpRequest.getUsername() == null || signUpRequest.getUsername().trim().isEmpty()) {
+            throw new ReglaNegocioExcepcion("Error: El nombre de usuario es obligatorio.");
+        }
+        if (signUpRequest.getEmail() == null || signUpRequest.getEmail().trim().isEmpty()) {
+            throw new ReglaNegocioExcepcion("Error: El correo electrónico es obligatorio.");
+        }
+        if (signUpRequest.getPassword() == null || signUpRequest.getPassword().trim().isEmpty()) {
+            throw new ReglaNegocioExcepcion("Error: La contraseña es obligatoria.");
+        }
+        if (signUpRequest.getRole() == null || signUpRequest.getRole().isEmpty()) {
+            throw new ReglaNegocioExcepcion("Error: Se debe asignar al menos un rol.");
+        }
+        // Validar que el correo electrónico no exista ya en la base de datos
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            throw new EntidadYaExisteException("Error: El correo electrónico ya está registrado.");
+        }
+
+        //crea el usuario 
+        User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
+                encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -79,23 +99,23 @@ public class AuthImpl implements AuthInt {
                 switch (role) {
                     case "coor":
                         Role coorRole = roleRepository.findByName(ERole.ROLE_COORDINADOR)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(coorRole);
 
-                    break;
+                        break;
                     case "prf":
                         Role prfRole = roleRepository.findByName(ERole.ROLE_PROFESOR)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(prfRole);
 
-                    break;
+                        break;
                 }
             });
         }
         user.setRoles(roles);
+        //guarda el usuario en el repositorio
         userRepository.save(user);
-        return new MessageResponseDTO("Usuario "+user.getUsername()+" creado exitosamente");
+        return new MessageResponseDTO("Usuario " + user.getUsername() + " creado exitosamente");
     }
 
-    
 }

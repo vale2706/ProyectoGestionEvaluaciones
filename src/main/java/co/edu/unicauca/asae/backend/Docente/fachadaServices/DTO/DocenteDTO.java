@@ -8,13 +8,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class DocenteDTO{
-    private Integer tipoId;
+    private TipoId tipoId;
     private TipoDocente tipoDocente;
     private String tituloDocente;
     private String nombreCompleto;
     private Integer id;
     private String email;
     public DocenteDTO() {
+    }
+    public enum TipoId{
+        CC,
+        CE
     }
     public enum TipoDocente {
         Catedra,

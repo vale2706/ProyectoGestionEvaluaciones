@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Competencia")
+@Table(name = "CompetenciaPrograma")
 public class CompetenciaEntity {
 
     @Id
