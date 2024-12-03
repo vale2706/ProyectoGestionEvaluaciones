@@ -1,11 +1,13 @@
 package co.edu.unicauca.asae.backend.Docente.fachadaServices.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import com.google.gson.reflect.TypeToken;
+
 
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
@@ -24,18 +26,19 @@ public class DocenteServicesImpl implements IDocenteServices {
     @Autowired
     private UserRepository userRepository;
 
-    public DocenteServicesImpl(DocenteRepository servicioAccesoBaseDatos, ModelMapper modelMapper){
+    public DocenteServicesImpl(DocenteRepository servicioAccesoBaseDatos,  ModelMapper modelMapper){
         this.servicioAccesoBaseDatos = servicioAccesoBaseDatos;
         this.modelMapper = modelMapper;
     }
 
-    @Override
-    public List<DocenteDTO> findAll(){
-        List<DocenteEntity> listaDocente = this.servicioAccesoBaseDatos.findAll();
-        List<DocenteDTO> docenteDTOs = this.modelMapper.map(listaDocente, new TypeToken<List<DocenteDTO>>(){
-        }.getType());
-        return docenteDTOs;
-    }
+   @Override
+public List<DocenteDTO> findAll() {
+    List<DocenteEntity> listaDocente = this.servicioAccesoBaseDatos.findAll();
+    List<DocenteDTO> docenteDTOs = listaDocente.stream()
+        .map(entity -> this.modelMapper.map(entity, DocenteDTO.class))
+        .collect(Collectors.toList());
+    return docenteDTOs;
+}
 
     @Override
     public DocenteDTO findById(Integer idDocente){
