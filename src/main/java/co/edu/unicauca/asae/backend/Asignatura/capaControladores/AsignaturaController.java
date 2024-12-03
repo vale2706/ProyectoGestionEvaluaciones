@@ -67,13 +67,4 @@ public class AsignaturaController {
         ResponseEntity<Boolean> objRespuesta = new ResponseEntity<Boolean>(isRemoved, HttpStatus.NO_CONTENT);
         return objRespuesta;
     }
-
-    @RestController
-@RequestMapping("/test")
-public class TestController {
-    @GetMapping
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("¡El servidor funciona correctamente!");
-    }
-}
 }

@@ -37,9 +37,8 @@ public class AsignaturaServiceImpl implements IAsignaturaService {
     }
 
     @Override
-    
     public AsignaturaDTO save(AsignaturaDTO asignatura) {
-        if (servicioAccesoBaseDatos.existsById(asignatura.getId())) {
+        if (asignatura.getId() != null && servicioAccesoBaseDatos.existsById(asignatura.getId())) {
             throw new ReglaNegocioExcepcion("Existe una Asignatura con ese ID, no se permite crear la Asignatura");
         }
 
