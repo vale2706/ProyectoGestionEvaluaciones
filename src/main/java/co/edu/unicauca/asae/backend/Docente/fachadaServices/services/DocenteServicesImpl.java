@@ -48,16 +48,12 @@ public class DocenteServicesImpl implements IDocenteServices {
     @Override
     public DocenteDTO save(DocenteDTO docenteDTO) {
         // Verificar si el correo ya existe
-        if (userRepository.existsByEmail(docenteDTO.getEmail())) {
-            throw new ReglaNegocioExcepcion("Ya existe un Docente con ese correo, no se permite crear Docente");
+        if (docenteDTO.getId() != null && docenteRepository.existsById(docenteDTO.getId())) {
+            throw new ReglaNegocioExcepcion("Ya existe un Docente con ese correo, no se permite crear");
         }
-
-        // Convertir el DTO a entidad
-        DocenteEntity docenteEntity = this.modelMapper.map(docenteDTO, DocenteEntity.class);
-        // Guardar en la base de datos
-        DocenteEntity docenteEntityGuardado = this.docenteRepository.save(docenteEntity);
-        // Convertir la entidad guardada en DTO
-        return this.modelMapper.map(docenteEntityGuardado, DocenteDTO.class);
+        DocenteEntity docenteEntity = modelMapper.map(docenteDTO, DocenteEntity.class);
+        DocenteEntity docenteEntityGuardada = this.docenteRepository.save(docenteEntity);
+        return this.modelMapper.map(docenteEntityGuardada, DocenteDTO.class);
     }
 
     @Override
