@@ -2,13 +2,7 @@ package co.edu.unicauca.asae.backend.ResultadosAprendizaje.capaAccesoADatos.mode
 
 import co.edu.unicauca.asae.backend.Asignatura.capaAccesoADatos.models.AsignaturaEntity;
 import co.edu.unicauca.asae.backend.competenciasDePrograma.capaAccesoADatos.models.CompetenciaEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,17 +18,22 @@ public class ResultadosAprendizajeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(length = 250)
     private String descripcion;
 
+    @Column(length = 250)
+    private String tipo;
 
     @ManyToOne
-    @JoinColumn(name = "idAsignatura", nullable = false)
+    @JoinColumn(name = "idAsignatura")
     private AsignaturaEntity objAsignatura;
 
     @ManyToOne
-    @JoinColumn(name = "idCompetencia", nullable = false)
-    private CompetenciaEntity objCompetencia;
+    @JoinColumn(name = "idCompetencia")
+    private CompetenciaEntity competencia;
 
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "resultadosAprendizaje")
+//    private List<CompetenciaEntity> competencias;
 
     public ResultadosAprendizajeEntity() {
     }

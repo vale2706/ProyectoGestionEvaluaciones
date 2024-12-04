@@ -20,7 +20,7 @@ public class CompetenciaDTO {
     private String descripcion;
     private Integer tblCompId;
     private Tipo tipo;
-    //private List<ResultadosAprendizajeDTO> resultadosAprendizajes;
+    private List<ResultadosAprendizajeDTO> resultadosAprendizaje;
     private List<Asig_Com_DocenteDTO> relaciones;
     
     public enum Tipo{
