@@ -27,42 +27,51 @@ public class ResultadosAprendizajeServicesImpl implements IResultadosAprendizaje
 @Override
 public List<ResultadosAprendizajeDTO> findAll() {
     List<ResultadosAprendizajeEntity> listaRa = this.servicioAccesoBaseDatos.findAll();
-    List<ResultadosAprendizajeDTO> raDTOs = listaRa.stream()
-        .map(entity -> this.modelMapper.map(entity, ResultadosAprendizajeDTO.class))
-        .collect(Collectors.toList());
-    return raDTOs;
+    return listaRa.stream()
+            .map(entity -> this.modelMapper.map(entity, ResultadosAprendizajeDTO.class))
+            .collect(Collectors.toList());
 }
 
     @Override
     public ResultadosAprendizajeDTO findById(Integer idRa){
-        ResultadosAprendizajeEntity objRa = this.servicioAccesoBaseDatos.findById(idRa);
-        ResultadosAprendizajeDTO objRaDTOs = this.modelMapper.map(objRa, ResultadosAprendizajeDTO.class);
-        return objRaDTOs;
+        ResultadosAprendizajeEntity objRa = this.servicioAccesoBaseDatos.findById(idRa).orElse(null);
+        if(objRa == null){
+            throw new NullPointerException("Error, el ResultadosAprendizaje con id " + idRa + " no existe");
+        }
+        return this.modelMapper.map(objRa, ResultadosAprendizajeDTO.class);
     }
 
     @Override
     public ResultadosAprendizajeDTO save(ResultadosAprendizajeDTO ra){
-        ResultadosAprendizajeEntity objRa = this.modelMapper.map(ra, ResultadosAprendizajeEntity.class);
-        ResultadosAprendizajeEntity entidadGuardada = this.servicioAccesoBaseDatos.save(objRa);
-
-        return this.modelMapper.map(entidadGuardada, ResultadosAprendizajeDTO.class);
+       /* if(ra.getId() != null && this.servicioAccesoBaseDatos.existsById(ra.getId())){
+            throw new NullPointerException("Existe un ResultadosAprendizaje con ese ID, no se permite crear el ResultadosAprendizaje");
+        }*/
+        ResultadosAprendizajeEntity raEntity = this.modelMapper.map(ra, ResultadosAprendizajeEntity.class);
+        ResultadosAprendizajeEntity raEntityGuardada = this.servicioAccesoBaseDatos.save(raEntity);
+        ResultadosAprendizajeDTO raDTO = this.modelMapper.map(raEntityGuardada, ResultadosAprendizajeDTO.class);
+        return raDTO;
     }
 
     @Override
     public ResultadosAprendizajeDTO update(Integer idRa, ResultadosAprendizajeDTO ra){
-        
-        ResultadosAprendizajeEntity raAux = new ResultadosAprendizajeEntity();
-        raAux.setId(ra.getId());
-        raAux.setDescripcion(ra.getDescripcion());
 
-        ResultadosAprendizajeEntity objRaAct = this.servicioAccesoBaseDatos.update(idRa, raAux);
-        ResultadosAprendizajeDTO raDTO = this.modelMapper.map(objRaAct, ResultadosAprendizajeDTO.class);
-
+        ResultadosAprendizajeEntity existingRa = this.servicioAccesoBaseDatos.findById(idRa).orElse(null);
+        if(existingRa == null){
+            throw new NullPointerException("Error, el ResultadosAprendizaje con id " + idRa + " no existe");
+        }
+        ResultadosAprendizajeEntity raEntity = this.modelMapper.map(ra, ResultadosAprendizajeEntity.class);
+        raEntity.setId(idRa);
+        ResultadosAprendizajeEntity raEntityActualizada = this.servicioAccesoBaseDatos.save(raEntity);
+        ResultadosAprendizajeDTO raDTO = this.modelMapper.map(raEntityActualizada, ResultadosAprendizajeDTO.class);
         return raDTO;
     }
 
     @Override
     public boolean delete(Integer idRa){
-        return this.servicioAccesoBaseDatos.deleteById(idRa);
+        if(!this.servicioAccesoBaseDatos.existsById(idRa)){
+            throw new NullPointerException("Error, el ResultadosAprendizaje con id " + idRa + " no existe");
+        }
+        this.servicioAccesoBaseDatos.deleteById(idRa);
+        return true;
     }
 }

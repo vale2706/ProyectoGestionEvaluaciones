@@ -3,7 +3,9 @@ package co.edu.unicauca.asae.backend.competenciasDePrograma.fachadaServices.serv
 import java.util.List;
 import java.util.stream.Collectors;
 
+import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Repositorios.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -28,97 +30,59 @@ public class CompetenciaServicesImpl implements ICompetenciaServices {
     @Override
     public List<CompetenciaDTO> findAll() {
         List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAll();
-        List<CompetenciaDTO> compDTOs = listaComp.stream()
+        return listaComp.stream()
                 .map(entity -> this.modelMapper.map(entity, CompetenciaDTO.class))
                 .collect(Collectors.toList());
-        return compDTOs;
     }
 
     @Override
     public CompetenciaDTO findById(Integer idComp) {
-        CompetenciaEntity objCompetencia = this.servicioAccesoBaseDatos.findById(idComp);
-        if (objCompetencia == null) {
-            throw new EntidadNoExisteException("Error, la competencia con id " + idComp + "no existe");
+        CompetenciaEntity objCompetencia = this.servicioAccesoBaseDatos.findById(idComp).orElse(null);
+        if(objCompetencia == null){
+            throw new EntidadNoExisteException("Error, la competencia con id " + idComp + " no existe");
         }
-        CompetenciaDTO objCompDTOs = this.modelMapper.map(objCompetencia, CompetenciaDTO.class);
-        return objCompDTOs;
+        return this.modelMapper.map(objCompetencia, CompetenciaDTO.class);
     }
 
     @Override
     public CompetenciaDTO save(CompetenciaDTO comp) {
-        CompetenciaDTO competenciaDTO = null;
-        if (this.servicioAccesoBaseDatos.existeCompetencia(comp.getIdcomp()) == true) {
-            System.out.println("ID de la Competencia " + comp.getIdcomp());
-
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                    "Exíste una Competencia con ese ID, no se permite crear Competencia");
-            throw objExcepcion;
-        } else {
-            CompetenciaEntity competenciaEntity = this.modelMapper.map(comp, CompetenciaEntity.class);
-
-            CompetenciaEntity competenciaEntityGuardada = this.servicioAccesoBaseDatos.save(competenciaEntity);
-            competenciaDTO = this.modelMapper.map(competenciaEntityGuardada, CompetenciaDTO.class);
+        if(comp.getIdcomp() != null && servicioAccesoBaseDatos.existsById(comp.getIdcomp())){
+            throw new ReglaNegocioExcepcion("Ya existe una competencia con ese codigo, no se permite crear");
         }
-        return competenciaDTO;
+        CompetenciaEntity competenciaEntity = modelMapper.map(comp, CompetenciaEntity.class);
+        CompetenciaEntity competenciaEntityGuardada = this.servicioAccesoBaseDatos.save(competenciaEntity);
+        return this.modelMapper.map(competenciaEntityGuardada, CompetenciaDTO.class);
     }
 
     @Override
     public CompetenciaDTO update(Integer idComp, CompetenciaDTO comp) {
-
-        CompetenciaDTO competenciaDTO = null;
-
-        if (this.servicioAccesoBaseDatos.existeCompetencia(idComp)) {
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idComp).getIdComp();
-            Integer idNuevo = comp.getIdcomp();
-            if (!idAnterior.equals(idNuevo) && this.servicioAccesoBaseDatos.existeCompetencia(comp.getIdcomp())) {
-                ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                        "Existe una competencia con el codigo registrado, no se permite actualizar");
-                throw objExcepcion;
-            } else {
-                CompetenciaEntity compAux = new CompetenciaEntity();
-                compAux.setIdComp(comp.getIdcomp());
-                compAux.setDescripcion(comp.getDescripcion());
-                compAux.setNivel(CompetenciaEntity.Nivel.valueOf(comp.getNivel().name()));
-
-                CompetenciaEntity objCompetenciaAct = this.servicioAccesoBaseDatos.update(idComp, compAux);
-                competenciaDTO = this.modelMapper.map(objCompetenciaAct, CompetenciaDTO.class);
-            }
-        } else {
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                    "Error, la competencia a actualizar no existe");
-            throw objException;
+        CompetenciaEntity existingCompetencia = this.servicioAccesoBaseDatos.findById(idComp).orElse(null);
+        if(existingCompetencia == null){
+            throw new EntidadNoExisteException("Error, la competencia con id " + idComp + " no existe");
         }
-        return competenciaDTO;
+
+        CompetenciaEntity competenciaEntity = modelMapper.map(comp, CompetenciaEntity.class);
+        competenciaEntity.setIdComp(idComp);
+        CompetenciaEntity competenciaEntityActualizada = this.servicioAccesoBaseDatos.save(competenciaEntity);
+
+        return this.modelMapper.map(competenciaEntityActualizada, CompetenciaDTO.class);
     }
 
     @Override
     public boolean delete(Integer idComp) {
-        boolean bandera = false;
-        if (this.servicioAccesoBaseDatos.existeCompetencia(idComp)) {
-            bandera = this.servicioAccesoBaseDatos.deleteById(idComp);
-        } else {
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                    "Error, la competencia a eliminar no existe");
-            throw objException;
+        if(!this.servicioAccesoBaseDatos.existsById(idComp)){
+            throw new EntidadNoExisteException("Error, la competencia con id " + idComp + " no existe");
         }
-        return bandera;
+        this.servicioAccesoBaseDatos.deleteById(idComp);
+        return true;
     }
 
     @Override
     public List<CompetenciaDTO> findAllWithResultados() {
-        List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAll();
-        List<CompetenciaDTO> compDTOs = listaComp.stream()
+        // Usar el nuevo método con @Query que hace uso de LEFT JOIN FETCH
+        List<CompetenciaEntity> listaComp = this.servicioAccesoBaseDatos.findAllWithResultados();
+        return listaComp.stream()
                 .map(entity -> this.modelMapper.map(entity, CompetenciaDTO.class))
                 .collect(Collectors.toList());
-
-        for (CompetenciaDTO competenciaDTO : compDTOs) {
-            List<ResultadosAprendizajeDTO> resultadosDTOs = listaComp.stream()
-                    .filter(comp -> comp.getIdComp().equals(competenciaDTO.getIdcomp()))
-                    .flatMap(comp -> comp.getResultadosAprendizajes().stream())
-                    .map(entity -> this.modelMapper.map(entity, ResultadosAprendizajeDTO.class))
-                    .collect(Collectors.toList());
-            competenciaDTO.setResultadosAprendizajes(resultadosDTOs);
-        }
-        return compDTOs;
     }
 }

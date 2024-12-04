@@ -11,6 +11,7 @@ import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.En
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CriteriosDesempenioServiceImpl implements ICriteriosDesempenioService{
@@ -25,83 +26,49 @@ public class CriteriosDesempenioServiceImpl implements ICriteriosDesempenioServi
     @Override
     public List<CriteriosDesempenioDTO> findAll() {
         List<CriteriosDesempenioEntity> listaDesempenio = this.servicioAccesoBaseDatos.findAll();
-        List<CriteriosDesempenioDTO> desempenioDTOs = this.modelMapper.map(listaDesempenio,
-                new TypeToken<List<CriteriosDesempenioDTO>>() {
-                }.getType());
-        return desempenioDTOs;
+        return listaDesempenio.stream()
+                .map(entity -> this.modelMapper.map(entity, CriteriosDesempenioDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public CriteriosDesempenioDTO findById(Integer idDesempenio) {
-        CriteriosDesempenioEntity objDesempenio = this.servicioAccesoBaseDatos.findById(idDesempenio);
-        if (objDesempenio == null) {
-            throw new EntidadNoExisteException("Error, el criterio de desempeño con id " + idDesempenio + " no existe");
+        CriteriosDesempenioEntity desempenioEntity = this.servicioAccesoBaseDatos.findById(idDesempenio).orElse(null);
+        if(desempenioEntity == null){
+            throw new EntidadNoExisteException("Error, el desempeño con id " + idDesempenio + " no existe");
         }
-        CriteriosDesempenioDTO desempenioDTO = this.modelMapper.map(objDesempenio, CriteriosDesempenioDTO.class);
-        return desempenioDTO;
+        return this.modelMapper.map(desempenioEntity, CriteriosDesempenioDTO.class);
     }
 
     @Override
     public CriteriosDesempenioDTO save(CriteriosDesempenioDTO desempenio){
-        CriteriosDesempenioDTO desempenioDTO = null;
-        
-        if(this.servicioAccesoBaseDatos.existeCriteriosDesempenio(desempenio.getId()) == true){
-            System.out.println("ID de la desempenio"+desempenio.getId());
-
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                "Exíste un criterio de desempeño con ese ID, no se permite crear criterio de desempeño");
-            throw objExcepcion;
-        }else{
-            CriteriosDesempenioEntity asignaturaEntity = this.modelMapper.map(desempenio, CriteriosDesempenioEntity.class);
-
-            CriteriosDesempenioEntity asignaturaEntityGuardada = this.servicioAccesoBaseDatos.save(asignaturaEntity);
-            desempenioDTO = this.modelMapper.map(asignaturaEntityGuardada, CriteriosDesempenioDTO.class);
-        }
-        return desempenioDTO;
+        CriteriosDesempenioEntity desempenioEntity = this.modelMapper.map(desempenio, CriteriosDesempenioEntity.class);
+        CriteriosDesempenioEntity desempenioEntityGuardada = this.servicioAccesoBaseDatos.save(desempenioEntity);
+        return this.modelMapper.map(desempenioEntityGuardada, CriteriosDesempenioDTO.class);
     }
 
     @Override
     public CriteriosDesempenioDTO update(Integer idDesempenio, CriteriosDesempenioDTO desempenio){
 
-        CriteriosDesempenioDTO desempenioDTO = null;
-
-        if(this.servicioAccesoBaseDatos.existeCriteriosDesempenio(idDesempenio) == true){
-
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idDesempenio).getId();
-            Integer idNuevo = desempenio.getId();
-            if(idAnterior.equals(idNuevo) == false && this.servicioAccesoBaseDatos.existeCriteriosDesempenio(desempenio.getId()) == true){
-                ReglaNegocioExcepcion objException = new ReglaNegocioExcepcion(
-                    "Existe un criterio de desempeño con el codigo registrado, no se permite actualizar");
-                throw objException;
-            }else{
-                CriteriosDesempenioEntity desempenioAux = new CriteriosDesempenioEntity();
-                desempenioAux.setId(desempenio.getId());
-                desempenioAux.setDescripcion(desempenio.getDescripcion());
-                desempenioAux.setPonderacionDesemp(desempenio.getPonderacionDesemp());
-                desempenioAux.setNivelDesemp(desempenio.getNivelDesemp());
-
-                CriteriosDesempenioEntity objDesempenioAct = this.servicioAccesoBaseDatos.update(idDesempenio, desempenioAux);
-                desempenioDTO = this.modelMapper.map(objDesempenioAct, CriteriosDesempenioDTO.class);
-            }
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, el criterio de desempeño a actualizar no existe");
-            throw objException;
+        CriteriosDesempenioEntity existingDesempenio = this.servicioAccesoBaseDatos.findById(idDesempenio).orElse(null);
+        if(existingDesempenio == null){
+            throw new EntidadNoExisteException("Error, el desempeño con id " + idDesempenio + " no existe");
         }
-        return desempenioDTO;
+
+        CriteriosDesempenioEntity desempenioEntity = this.modelMapper.map(desempenio, CriteriosDesempenioEntity.class);
+        desempenioEntity.setId(idDesempenio);
+        CriteriosDesempenioEntity desempenioEntityActualizada = this.servicioAccesoBaseDatos.save(desempenioEntity);
+        return this.modelMapper.map(desempenioEntityActualizada, CriteriosDesempenioDTO.class);
     }
 
     @Override
     public boolean delete(Integer idDesempenio){
 
-        boolean bandera = false;
-        if(this.servicioAccesoBaseDatos.existeCriteriosDesempenio(idDesempenio) == true){
-            bandera = this.servicioAccesoBaseDatos.deleteById(idDesempenio);
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, el criterio de desempeño a eliminar no existe");
-            throw objException;
+        if(!this.servicioAccesoBaseDatos.existsById(idDesempenio)){
+            throw new EntidadNoExisteException("Error, el desempeño con id " + idDesempenio + " no existe");
         }
-        return bandera;
+
+        this.servicioAccesoBaseDatos.deleteById(idDesempenio);
+        return true;
     }
 }
