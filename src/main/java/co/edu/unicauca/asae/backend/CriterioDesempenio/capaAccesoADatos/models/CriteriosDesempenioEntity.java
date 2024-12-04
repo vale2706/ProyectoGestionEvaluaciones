@@ -4,14 +4,7 @@ import java.util.List;
 
 import co.edu.unicauca.asae.backend.NivelDesempenio.capaAccesoADatos.models.NivelDesempenioEntity;
 import co.edu.unicauca.asae.backend.Rubrica.capaAccesoADatos.models.RubricaEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,12 +16,13 @@ import lombok.Setter;
 @Table(name= "CriterioDesempenio")
 public class CriteriosDesempenioEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String descripcion;
     private String ponderacionDesemp;
 
     @ManyToOne
-    @JoinColumn(name= "idRubrica", nullable = false)
+    @JoinColumn(name= "idRubrica")
     private RubricaEntity rubrica;
 
     @OneToMany(mappedBy ="criterio",fetch = FetchType.EAGER,cascade = CascadeType.ALL)

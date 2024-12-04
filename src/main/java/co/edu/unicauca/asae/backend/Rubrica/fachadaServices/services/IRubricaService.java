@@ -11,4 +11,5 @@ public interface IRubricaService {
     public RubricaDTO update(Integer idRubrica, RubricaDTO rubricaDTO);
     public boolean delete(Integer idRubrica);
     public RubricaDTO findRubricaWithDetails(Integer idRubrica);
+    void vincularRubricaCriterioNivel(Integer idRubrica, Integer idNivelD, Integer idCriterio);
 }

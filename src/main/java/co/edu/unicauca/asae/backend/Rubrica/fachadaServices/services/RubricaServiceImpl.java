@@ -1,5 +1,9 @@
 package co.edu.unicauca.asae.backend.Rubrica.fachadaServices.services;
 
+import co.edu.unicauca.asae.backend.CriterioDesempenio.capaAccesoADatos.models.CriteriosDesempenioEntity;
+import co.edu.unicauca.asae.backend.CriterioDesempenio.capaAccesoADatos.repositories.CriteriosDesempenioRepository;
+import co.edu.unicauca.asae.backend.NivelDesempenio.capaAccesoADatos.models.NivelDesempenioEntity;
+import co.edu.unicauca.asae.backend.NivelDesempenio.capaAccesoADatos.repositories.NivelDesempenioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.modelmapper.TypeToken;
@@ -8,7 +12,6 @@ import co.edu.unicauca.asae.backend.Rubrica.capaAccesoADatos.models.RubricaEntit
 import co.edu.unicauca.asae.backend.Rubrica.capaAccesoADatos.repositories.RubricaRepository;
 import co.edu.unicauca.asae.backend.Rubrica.fachadaServices.DTO.RubricaDTO;
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.EntidadNoExisteException;
-import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 public class RubricaServiceImpl implements IRubricaService {
     private RubricaRepository servicioAccesoBaseDatos;
+    private CriteriosDesempenioRepository criterioDesempenioRepository;
+    private NivelDesempenioRepository nivelDesempenioRepository;
     private ModelMapper modelMapper;
 
     public RubricaServiceImpl(RubricaRepository servicioAccesoBaseDatos, ModelMapper modelMapper) {
@@ -79,5 +84,29 @@ public class RubricaServiceImpl implements IRubricaService {
             throw new EntidadNoExisteException("Error, la rubrica con id " + idRubrica + " no existe");
         }
         return this.modelMapper.map(rubricaEntity, RubricaDTO.class);
+    }
+
+    @Override
+    public void  vincularRubricaCriterioNivel(Integer idRubrica, Integer idCriterio, Integer idNivel){
+        RubricaEntity rubricaEntity = servicioAccesoBaseDatos.findById(idRubrica)
+                .orElseThrow(() -> new EntidadNoExisteException("Error, la rubrica con id " + idRubrica + " no existe"));
+
+        CriteriosDesempenioEntity desempenioEntity = criterioDesempenioRepository.findById(idCriterio)
+                .orElseThrow(() -> new EntidadNoExisteException("Error, el DEsempeño con id " + idCriterio + " no existe"));
+
+        NivelDesempenioEntity nivelDesempenioEntity =  nivelDesempenioRepository.findById(idNivel)
+                .orElseThrow(() -> new EntidadNoExisteException(""));
+
+        // Vincular NivelDesempenio con Criterio
+        desempenioEntity.getNivelDesempenio().add(nivelDesempenioEntity);
+        nivelDesempenioEntity.setCriterio(desempenioEntity);
+
+        // Vincular Criterio con Rubrica
+        rubricaEntity.getCriterioDesempenio().add(desempenioEntity);
+        desempenioEntity.setRubrica(rubricaEntity);
+
+        // Guardar cambios
+        criterioDesempenioRepository.save(desempenioEntity);
+        nivelDesempenioRepository.save(nivelDesempenioEntity);
     }
 }

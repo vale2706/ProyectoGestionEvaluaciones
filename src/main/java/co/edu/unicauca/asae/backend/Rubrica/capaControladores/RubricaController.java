@@ -61,8 +61,7 @@ public class RubricaController {
         return objRespuesta;
     }
 
-    @Override
-    @GetMapping("/rubrica/{rubricaId}")
+    @GetMapping("/{rubricaId}")
     public ResponseEntity<RubricaDTO> getRubricaWithDetails(@PathVariable Integer rubricaId) {
         RubricaDTO rubrica = rubricaService.findRubricaWithDetails(rubricaId);
         if (rubrica == null) {
@@ -70,4 +69,14 @@ public class RubricaController {
         }
         return new ResponseEntity<RubricaDTO>(rubrica, HttpStatus.OK);
     }
+
+    @PostMapping("/rubrica/{idRubrica}/vincular/{idCriterio}/{idNivel}")
+    public ResponseEntity<Void> vincularRubricaCriterioNivel(
+            @PathVariable Integer idRubrica,
+            @PathVariable Integer idCriterio,
+            @PathVariable Integer idNivel) {
+        rubricaService.vincularRubricaCriterioNivel(idRubrica, idCriterio, idNivel);
+        return ResponseEntity.ok().build();
+    }
+
 }
