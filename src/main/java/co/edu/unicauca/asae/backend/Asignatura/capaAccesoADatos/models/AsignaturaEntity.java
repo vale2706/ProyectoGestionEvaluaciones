@@ -17,7 +17,7 @@ import lombok.Setter;
 public class AsignaturaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String nombre;
     private String descripcion;

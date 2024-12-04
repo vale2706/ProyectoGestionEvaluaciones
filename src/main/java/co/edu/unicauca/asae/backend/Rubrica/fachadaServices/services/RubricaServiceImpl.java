@@ -11,6 +11,7 @@ import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.En
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RubricaServiceImpl implements IRubricaService {
@@ -25,82 +26,49 @@ public class RubricaServiceImpl implements IRubricaService {
     @Override
     public List<RubricaDTO> findAll() {
         List<RubricaEntity> listarRubrica = this.servicioAccesoBaseDatos.findAll();
-        List<RubricaDTO> RubricaDTOs = this.modelMapper.map(listarRubrica,
-                new TypeToken<List<RubricaDTO>>() {
-                }.getType());
-        return RubricaDTOs;
+        return listarRubrica.stream()
+                .map(entity -> this.modelMapper.map(entity, RubricaDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public RubricaDTO findById(Integer idRubrica) {
-        RubricaEntity objRubrica = this.servicioAccesoBaseDatos.findById(idRubrica);
-        if (objRubrica == null) {
+        RubricaEntity rubricaEntity = this.servicioAccesoBaseDatos.findById(idRubrica).orElse(null);
+        if(rubricaEntity == null){
             throw new EntidadNoExisteException("Error, la rubrica con id " + idRubrica + " no existe");
         }
-        RubricaDTO rubricaDTO = this.modelMapper.map(objRubrica, RubricaDTO.class);
-        return rubricaDTO;
+        return this.modelMapper.map(rubricaEntity, RubricaDTO.class);
     }
 
     @Override
     public RubricaDTO save(RubricaDTO rubrica){
-        RubricaDTO nivelDesDTO = null;
-        
-        if(this.servicioAccesoBaseDatos.existeRubrica(rubrica.getId()) == true){
-            System.out.println("ID de la rubrica "+rubrica.getId());
 
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                "Exíste una rubrica con ese ID, no se permite crear rubrica");
-            throw objExcepcion;
-        }else{
-            RubricaEntity rubricaEntity = this.modelMapper.map(rubrica, RubricaEntity.class);
-
-            RubricaEntity rubricaEntityGuardada = this.servicioAccesoBaseDatos.save(rubricaEntity);
-            nivelDesDTO = this.modelMapper.map(rubricaEntityGuardada, RubricaDTO.class);
-        }
-        return nivelDesDTO;
+        RubricaEntity rubricaEntity = this.modelMapper.map(rubrica, RubricaEntity.class);
+        RubricaEntity rubricaEntityGuardada = this.servicioAccesoBaseDatos.save(rubricaEntity);
+        return this.modelMapper.map(rubricaEntityGuardada, RubricaDTO.class);
     }
 
     @Override
     public RubricaDTO update(Integer idRubrica, RubricaDTO rubrica){
 
-        RubricaDTO nivelDesDTO = null;
-
-        if(this.servicioAccesoBaseDatos.existeRubrica(idRubrica) == true){
-
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idRubrica).getId();
-            Integer idNuevo = rubrica.getId();
-            if(idAnterior.equals(idNuevo) == false && this.servicioAccesoBaseDatos.existeRubrica(rubrica.getId()) == true){
-                ReglaNegocioExcepcion objException = new ReglaNegocioExcepcion(
-                    "Existe una rubrica con el id registrado, no se permite actualizar");
-                throw objException;
-            }else{
-                RubricaEntity rubricaAux = new RubricaEntity();
-                rubricaAux.setId(rubrica.getId());
-                rubricaAux.setNomDescriptivo(rubrica.getNomDescriptivo());
-                rubricaAux.setCriterioDes(rubrica.getCriterioDes());
-
-                RubricaEntity objrubricaAct = this.servicioAccesoBaseDatos.update(idRubrica, rubricaAux);
-                nivelDesDTO = this.modelMapper.map(objrubricaAct, RubricaDTO.class);
-            }
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, la rubrica a actualizar no existe");
-            throw objException;
+        RubricaEntity rubricaExistente = this.servicioAccesoBaseDatos.findById(idRubrica).orElse(null);
+        if(rubricaExistente == null){
+            throw new EntidadNoExisteException("Error, la rubrica a actualizar no existe");
         }
-        return nivelDesDTO;
+
+        RubricaEntity rubricaActualizada = this.modelMapper.map(rubrica, RubricaEntity.class);
+        rubricaActualizada.setId(idRubrica);
+        RubricaEntity rubricaEntityGuardada = this.servicioAccesoBaseDatos.save(rubricaActualizada);
+        return this.modelMapper.map(rubricaEntityGuardada, RubricaDTO.class);
     }
 
     @Override
     public boolean delete(Integer idRubrica){
-
-        boolean bandera = false;
-        if(this.servicioAccesoBaseDatos.existeRubrica(idRubrica) == true){
-            bandera = this.servicioAccesoBaseDatos.deleteById(idRubrica);
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, la rubrica a eliminar no existe");
-            throw objException;
+        if(!this.servicioAccesoBaseDatos.existsById(idRubrica)){
+            throw new EntidadNoExisteException("Error, la rubrica a eliminar no existe");
         }
-        return bandera;
+
+        this.servicioAccesoBaseDatos.deleteById(idRubrica);
+        return true;
     }
 }

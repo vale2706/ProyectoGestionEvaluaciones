@@ -11,6 +11,7 @@ import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.En
 import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NivelDesempenioServiceImpl implements INivelDesempenioService {
@@ -24,82 +25,47 @@ public class NivelDesempenioServiceImpl implements INivelDesempenioService {
 
     @Override
     public List<NivelDesempenioDTO> findAll() {
-        List<NivelDesempenioEntity> listaAsignatura = this.servicioAccesoBaseDatos.findAll();
-        List<NivelDesempenioDTO> AsignaturaDTOs = this.modelMapper.map(listaAsignatura,
-                new TypeToken<List<NivelDesempenioDTO>>() {
-                }.getType());
-        return AsignaturaDTOs;
+        List<NivelDesempenioEntity> listaNivel = this.servicioAccesoBaseDatos.findAll();
+        return listaNivel.stream()
+                .map(entity -> this.modelMapper.map(entity, NivelDesempenioDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public NivelDesempenioDTO findById(Integer idNivelD) {
-        NivelDesempenioEntity objNivelD = this.servicioAccesoBaseDatos.findById(idNivelD);
-        if (objNivelD == null) {
-            throw new EntidadNoExisteException("Error, el Nivel de desempeño con id " + idNivelD + " no existe");
+        NivelDesempenioEntity nivelDesempenio = this.servicioAccesoBaseDatos.findById(idNivelD).orElse(null);
+        if(nivelDesempenio == null){
+            throw new EntidadNoExisteException("Error, el nivel de desempeño con id " + idNivelD + " no existe");
         }
-        NivelDesempenioDTO nivelDesDTO = this.modelMapper.map(objNivelD, NivelDesempenioDTO.class);
-        return nivelDesDTO;
+        return this.modelMapper.map(nivelDesempenio, NivelDesempenioDTO.class);
     }
 
     @Override
     public NivelDesempenioDTO save(NivelDesempenioDTO nivelD){
-        NivelDesempenioDTO nivelDesDTO = null;
-        
-        if(this.servicioAccesoBaseDatos.existeNivelDesempenio(nivelD.getId()) == true){
-            System.out.println("ID de la nivelD"+nivelD.getId());
-
-            ReglaNegocioExcepcion objExcepcion = new ReglaNegocioExcepcion(
-                "Exíste una Nivel de desempeño con ese ID, no se permite crear Nivel de desempeño");
-            throw objExcepcion;
-        }else{
-            NivelDesempenioEntity nivelDEntity = this.modelMapper.map(nivelD, NivelDesempenioEntity.class);
-
-            NivelDesempenioEntity nivelDesempenioEntityGuardada = this.servicioAccesoBaseDatos.save(nivelDEntity);
-            nivelDesDTO = this.modelMapper.map(nivelDesempenioEntityGuardada, NivelDesempenioDTO.class);
-        }
-        return nivelDesDTO;
+        NivelDesempenioEntity nivelDesempenio = this.modelMapper.map(nivelD, NivelDesempenioEntity.class);
+        NivelDesempenioEntity nivelDesempenioGuardado = this.servicioAccesoBaseDatos.save(nivelDesempenio);
+        return this.modelMapper.map(nivelDesempenioGuardado, NivelDesempenioDTO.class);
     }
 
     @Override
     public NivelDesempenioDTO update(Integer idNivelD, NivelDesempenioDTO nivelD){
-
-        NivelDesempenioDTO nivelDesDTO = null;
-
-        if(this.servicioAccesoBaseDatos.existeNivelDesempenio(idNivelD) == true){
-
-            Integer idAnterior = this.servicioAccesoBaseDatos.findById(idNivelD).getId();
-            Integer idNuevo = nivelD.getId();
-            if(idAnterior.equals(idNuevo) == false && this.servicioAccesoBaseDatos.existeNivelDesempenio(nivelD.getId()) == true){
-                ReglaNegocioExcepcion objException = new ReglaNegocioExcepcion(
-                    "Existe un Nivel de desempeño con el codigo registrado, no se permite actualizar");
-                throw objException;
-            }else{
-                NivelDesempenioEntity nivelDAux = new NivelDesempenioEntity();
-                nivelDAux.setId(nivelD.getId());
-                nivelDAux.setNomDescriptivo(nivelD.getNomDescriptivo());
-
-                NivelDesempenioEntity objNivelDAct = this.servicioAccesoBaseDatos.update(idNivelD, nivelDAux);
-                nivelDesDTO = this.modelMapper.map(objNivelDAct, NivelDesempenioDTO.class);
-            }
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, el Nivel de desempeño a actualizar no existe");
-            throw objException;
+        NivelDesempenioEntity existindNivel = this.servicioAccesoBaseDatos.findById(idNivelD).orElse(null);
+        if(existindNivel == null){
+            throw new EntidadNoExisteException("Error, el nivel de desempeño con id " + idNivelD + " no existe");
         }
-        return nivelDesDTO;
+        NivelDesempenioEntity nivelDesempenio = this.modelMapper.map(nivelD, NivelDesempenioEntity.class);
+        nivelDesempenio.setId(idNivelD);
+        NivelDesempenioEntity nivelDesempenioActualizado = this.servicioAccesoBaseDatos.save(nivelDesempenio);
+        return this.modelMapper.map(nivelDesempenioActualizado, NivelDesempenioDTO.class);
     }
 
     @Override
     public boolean delete(Integer idNivelD){
 
-        boolean bandera = false;
-        if(this.servicioAccesoBaseDatos.existeNivelDesempenio(idNivelD) == true){
-            bandera = this.servicioAccesoBaseDatos.deleteById(idNivelD);
-        }else{
-            EntidadNoExisteException objException = new EntidadNoExisteException(
-                "Error, el Nivel de desempeño a eliminar no existe");
-            throw objException;
+        if(!this.servicioAccesoBaseDatos.existsById(idNivelD)){
+            throw new EntidadNoExisteException("Error, el nivel de desempeño con id " + idNivelD + " no existe");
         }
-        return bandera;
+        this.servicioAccesoBaseDatos.deleteById(idNivelD);
+        return true;
     }
 }
