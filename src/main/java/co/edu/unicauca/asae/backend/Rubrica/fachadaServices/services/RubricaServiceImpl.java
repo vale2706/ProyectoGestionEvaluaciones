@@ -71,4 +71,13 @@ public class RubricaServiceImpl implements IRubricaService {
         this.servicioAccesoBaseDatos.deleteById(idRubrica);
         return true;
     }
+
+    @Override
+    public RubricaDTO findRubricaWithDetails(Integer idRubrica){
+        RubricaEntity rubricaEntity = this.servicioAccesoBaseDatos.findById(idRubrica).orElse(null);
+        if(rubricaEntity == null){
+            throw new EntidadNoExisteException("Error, la rubrica con id " + idRubrica + " no existe");
+        }
+        return this.modelMapper.map(rubricaEntity, RubricaDTO.class);
+    }
 }

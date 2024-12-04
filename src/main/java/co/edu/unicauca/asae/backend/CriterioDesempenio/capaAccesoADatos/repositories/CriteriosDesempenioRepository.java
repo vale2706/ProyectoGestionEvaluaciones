@@ -12,7 +12,5 @@ import co.edu.unicauca.asae.backend.CriterioDesempenio.capaAccesoADatos.models.C
 
 @Repository
 public interface CriteriosDesempenioRepository extends JpaRepository<CriteriosDesempenioEntity, Integer> {
-    @Query("SELECT c FROM CriteriosDesempenioEntity c JOIN c.nivelDesemp n WHERE n.id = :idNivel")
-    List<CriteriosDesempenioEntity> findByNivelDesempenio(@Param("idNivel") Long idNivel);
 
 }

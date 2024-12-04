@@ -31,7 +31,7 @@ public class CriteriosDesempenioEntity {
     @JoinColumn(name= "idRubrica", nullable = false)
     private RubricaEntity rubrica;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy ="criterio",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<NivelDesempenioEntity> nivelDesempenio;
     
     public CriteriosDesempenioEntity(){

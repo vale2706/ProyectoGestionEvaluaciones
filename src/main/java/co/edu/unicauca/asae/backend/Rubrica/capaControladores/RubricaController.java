@@ -60,4 +60,14 @@ public class RubricaController {
         ResponseEntity<Boolean> objRespuesta = new ResponseEntity<Boolean>(isRemoved, HttpStatus.NO_CONTENT);
         return objRespuesta;
     }
+
+    @Override
+    @GetMapping("/rubrica/{rubricaId}")
+    public ResponseEntity<RubricaDTO> getRubricaWithDetails(@PathVariable Integer rubricaId) {
+        RubricaDTO rubrica = rubricaService.findRubricaWithDetails(rubricaId);
+        if (rubrica == null) {
+            return new ResponseEntity<RubricaDTO>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<RubricaDTO>(rubrica, HttpStatus.OK);
+    }
 }

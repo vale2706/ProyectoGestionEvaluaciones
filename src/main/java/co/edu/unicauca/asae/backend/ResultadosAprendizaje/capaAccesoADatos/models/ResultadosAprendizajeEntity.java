@@ -25,10 +25,6 @@ public class ResultadosAprendizajeEntity {
     private String tipo;
 
     @ManyToOne
-    @JoinColumn(name = "idAsignatura")
-    private AsignaturaEntity objAsignatura;
-
-    @ManyToOne
     @JoinColumn(name = "idCompetencia")
     private CompetenciaEntity competencia;
 
