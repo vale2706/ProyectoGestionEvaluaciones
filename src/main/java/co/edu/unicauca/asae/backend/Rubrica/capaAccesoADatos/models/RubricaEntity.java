@@ -15,11 +15,12 @@ import lombok.Setter;
 public class RubricaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nomDescriptivo;
-
-    @OneToMany(mappedBy = "rubrica")
-    private List<CriteriosDesempenioEntity> criterioDes;
+    private int nota;
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "rubrica")
+    private List<CriteriosDesempenioEntity> criterioDesempenio;
 
     public RubricaEntity(){
         

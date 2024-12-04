@@ -24,10 +24,6 @@ public class AsignaturaEntity {
     private int creditos;
     private int semestre;
    
-    
-    @OneToOne
-    @JoinColumn(name = "idRA")
-    private ResultadosAprendizajeEntity objRa;
 
     @OneToMany(fetch=FetchType.EAGER)
     private List<Asig_Com_DocenteEntity> relaciones;

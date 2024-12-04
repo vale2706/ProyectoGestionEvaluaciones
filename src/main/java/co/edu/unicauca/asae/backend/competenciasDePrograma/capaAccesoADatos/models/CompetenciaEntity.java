@@ -18,7 +18,6 @@ public class CompetenciaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "compId", nullable = false)
     private int idComp;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

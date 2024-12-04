@@ -13,7 +13,8 @@ import lombok.Setter;
 public class RubricaDTO {
     private Integer id;
     private String nomDescriptivo;
-    private List<CriteriosDesempenioEntity> CriterioDes;
+    private int nota;
+    private List<CriteriosDesempenioEntity> CriterioDesempenio;
 
     public RubricaDTO(){
         
