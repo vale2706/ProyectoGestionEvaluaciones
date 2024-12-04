@@ -11,4 +11,5 @@ public interface ICompetenciaServices {
     public List<ResultadosAprendizajeDTO> findRAsByCompetenciaProgramaId(Integer idComp);
     public CompetenciaDTO update(Integer idComp, CompetenciaDTO comp);
     public boolean delete(Integer idComp);
+    void vincularResultadoAprendizajeACompetencia(Integer competenciaId, Integer raId);
 }

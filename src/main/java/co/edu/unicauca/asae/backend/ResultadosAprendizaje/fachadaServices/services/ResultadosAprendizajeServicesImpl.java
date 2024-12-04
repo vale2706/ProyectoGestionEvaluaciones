@@ -3,6 +3,7 @@ package co.edu.unicauca.asae.backend.ResultadosAprendizaje.fachadaServices.servi
 import java.util.List;
 import java.util.stream.Collectors;
 
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,16 +43,17 @@ public List<ResultadosAprendizajeDTO> findAll() {
     }
 
     @Override
-    public ResultadosAprendizajeDTO save(ResultadosAprendizajeDTO ra){
-       /* if(ra.getId() != null && this.servicioAccesoBaseDatos.existsById(ra.getId())){
-            throw new NullPointerException("Existe un ResultadosAprendizaje con ese ID, no se permite crear el ResultadosAprendizaje");
-        }*/
-        ResultadosAprendizajeEntity raEntity = this.modelMapper.map(ra, ResultadosAprendizajeEntity.class);
-        ResultadosAprendizajeEntity raEntityGuardada = this.servicioAccesoBaseDatos.save(raEntity);
-        ResultadosAprendizajeDTO raDTO = this.modelMapper.map(raEntityGuardada, ResultadosAprendizajeDTO.class);
-        return raDTO;
-    }
+    public ResultadosAprendizajeDTO save(ResultadosAprendizajeDTO ra) {
 
+        System.out.println("se para "+ ra.getId());
+        if (ra.getId() != null && servicioAccesoBaseDatos.existsById(ra.getId())) {
+            throw new ReglaNegocioExcepcion("Ya existe un ResultadosAprendizaje con ese id, no se permite actualizar");
+        }
+
+        ResultadosAprendizajeEntity resultadosAprendizajeEntity = modelMapper.map(ra, ResultadosAprendizajeEntity.class);
+        ResultadosAprendizajeEntity resultadosAprendizajeEntityGuardada = servicioAccesoBaseDatos.save(resultadosAprendizajeEntity);
+        return modelMapper.map(resultadosAprendizajeEntityGuardada, ResultadosAprendizajeDTO.class);
+    }
     @Override
     public ResultadosAprendizajeDTO update(Integer idRa, ResultadosAprendizajeDTO ra){
 

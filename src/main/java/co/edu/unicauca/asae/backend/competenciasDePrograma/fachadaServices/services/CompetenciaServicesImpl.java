@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import co.edu.unicauca.asae.backend.ControladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import co.edu.unicauca.asae.backend.configuracionSeguridad.capaAccesoADatos.Repositorios.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +119,18 @@ public class CompetenciaServicesImpl implements ICompetenciaServices {
         // Si no existe o no es de tipo "programa", lanzar una excepción o retornar o retornar lista vacia
         throw new EntidadNoExisteException("La competencia no existe o no es de tipo programa.");
 
+    }
+
+    // Implementación en CompetenciaServicesImpl.java
+    @Override
+    public void vincularResultadoAprendizajeACompetencia(Integer competenciaId, Integer raId) {
+        CompetenciaEntity competencia = competenciaRepository.findById(competenciaId)
+                .orElseThrow(() -> new EntidadNoExisteException("Competencia no encontrada"));
+
+        ResultadosAprendizajeEntity ra = raRepository.findById(raId)
+                .orElseThrow(() -> new EntidadNoExisteException("Resultado de Aprendizaje no encontrado"));
+
+        competencia.getResultadosAprendizaje().add(ra);
+        competenciaRepository.save(competencia);
     }
 }
