@@ -21,6 +21,9 @@ public class ResultadosAprendizajeEntity {
     @Column(length = 250)
     private String descripcion;
 
+    @Column(length = 250)
+    private String tipo;
+
     @ManyToOne
     @JoinColumn(name = "idAsignatura")
     private AsignaturaEntity objAsignatura;
@@ -29,6 +32,8 @@ public class ResultadosAprendizajeEntity {
     @JoinColumn(name = "idCompetencia")
     private CompetenciaEntity competencia;
 
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "resultadosAprendizaje")
+//    private List<CompetenciaEntity> competencias;
 
     public ResultadosAprendizajeEntity() {
     }

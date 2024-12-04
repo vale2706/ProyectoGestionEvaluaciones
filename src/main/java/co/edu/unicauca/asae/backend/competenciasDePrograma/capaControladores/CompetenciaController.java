@@ -78,4 +78,14 @@ public class CompetenciaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al vincular los datos.");
         }
     }
+
+    @GetMapping("/Consultarcompetencia/{id}")
+    public ResponseEntity<CompetenciaDTO> getCompetenciaWithRAs(@PathVariable Integer id) {
+        try {
+            CompetenciaDTO competenciaDTO = competenciaServices.findByIdWithResultadosAprendizajes(id);
+            return new ResponseEntity<>(competenciaDTO, HttpStatus.OK);
+        } catch (EntidadNoExisteException ex) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }

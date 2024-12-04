@@ -26,17 +26,19 @@ public class CompetenciaEntity {
     private Integer tblCompId;
     @Column(length = 20)
     private Tipo tipo;
-    @Column(length = 250)
     private String descripcion;
 
 
     // Relación de uno a muchos con Asig_Com_DocenteEntity
     @OneToMany(mappedBy = "competencia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Asig_Com_DocenteEntity> asignaciones;
-
+    
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "competencia")
     private List<ResultadosAprendizajeEntity> resultadosAprendizaje;
 
+//    @ManyToOne
+//    @JoinColumn(name = "idAprendizaje")
+//    private ResultadosAprendizajeEntity resultadosAprendizaje;
 
     public enum Tipo{
         Programa,
@@ -52,7 +54,4 @@ public class CompetenciaEntity {
     public CompetenciaEntity(){
 
     }
-
-            
-    //}
 }

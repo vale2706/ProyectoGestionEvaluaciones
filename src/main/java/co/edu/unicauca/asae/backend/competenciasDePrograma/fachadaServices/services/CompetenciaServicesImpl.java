@@ -130,7 +130,17 @@ public class CompetenciaServicesImpl implements ICompetenciaServices {
         ResultadosAprendizajeEntity ra = raRepository.findById(raId)
                 .orElseThrow(() -> new EntidadNoExisteException("Resultado de Aprendizaje no encontrado"));
 
-        competencia.getResultadosAprendizaje().add(ra);
+        ra.setCompetencia(competencia);
         competenciaRepository.save(competencia);
+        raRepository.save(ra);
+    }
+
+    public CompetenciaDTO findByIdWithResultadosAprendizajes(Integer idComp) {
+        CompetenciaEntity competenciaEntity = competenciaRepository.findByCompetenciaIdWithResultadosAprendizajes(idComp);
+        if (competenciaEntity != null) {
+            return modelMapper.map(competenciaEntity, CompetenciaDTO.class);
+        } else {
+            throw new EntidadNoExisteException("Competencia no encontrada con el id: " + idComp);
+        }
     }
 }
