@@ -44,12 +44,12 @@ public List<ResultadosAprendizajeDTO> findAll() {
 
     @Override
     public ResultadosAprendizajeDTO save(ResultadosAprendizajeDTO ra) {
-
+        /*
         System.out.println("se para "+ ra.getId());
         if (ra.getId() != null && servicioAccesoBaseDatos.existsById(ra.getId())) {
             throw new ReglaNegocioExcepcion("Ya existe un ResultadosAprendizaje con ese id, no se permite actualizar");
-        }
-
+        }*/
+        System.out.println(ra.getDescripcion());
         ResultadosAprendizajeEntity resultadosAprendizajeEntity = modelMapper.map(ra, ResultadosAprendizajeEntity.class);
         ResultadosAprendizajeEntity resultadosAprendizajeEntityGuardada = servicioAccesoBaseDatos.save(resultadosAprendizajeEntity);
         return modelMapper.map(resultadosAprendizajeEntityGuardada, ResultadosAprendizajeDTO.class);

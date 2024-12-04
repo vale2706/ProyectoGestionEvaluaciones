@@ -50,6 +50,7 @@ public class ResultadosAprendizajeController {
 
     @PostMapping("/ra")
     public ResponseEntity<ResultadosAprendizajeDTO> CrearRa(@RequestBody ResultadosAprendizajeDTO ra) {
+        System.out.println("POST: "+ra.getDescripcion());
         ResultadosAprendizajeDTO objRa = RASercvices.save(ra);
         ResponseEntity<ResultadosAprendizajeDTO> objRespuesta = new ResponseEntity<ResultadosAprendizajeDTO>(objRa, HttpStatus.CREATED);
         return objRespuesta;

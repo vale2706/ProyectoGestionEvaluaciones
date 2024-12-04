@@ -15,19 +15,18 @@ import lombok.Setter;
 public class ResultadosAprendizajeEntity {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(length = 250)
     private String descripcion;
 
-
     @ManyToOne
-    @JoinColumn(name = "idAsignatura", nullable = false)
+    @JoinColumn(name = "idAsignatura")
     private AsignaturaEntity objAsignatura;
 
     @ManyToOne
-    @JoinColumn(name = "idCompetencia", nullable = false)
+    @JoinColumn(name = "idCompetencia")
     private CompetenciaEntity competencia;
 
 
