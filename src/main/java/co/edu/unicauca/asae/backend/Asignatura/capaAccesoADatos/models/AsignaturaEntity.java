@@ -25,9 +25,9 @@ public class AsignaturaEntity {
     private int semestre;
    
 
-    @OneToMany(fetch=FetchType.EAGER)
-    private List<Asig_Com_DocenteEntity> relaciones;
-   
+    @OneToMany(mappedBy = "asignatura", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+private List<Asig_Com_DocenteEntity> relaciones;
+
 
     
     public AsignaturaEntity(){

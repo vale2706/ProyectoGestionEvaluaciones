@@ -54,8 +54,8 @@ public class DocenteController {
     }
 
     // Eliminar una docente
-    @DeleteMapping("/docente")
-    public ResponseEntity<Boolean> eliminarDocentes(@RequestParam Integer idDocentes) {
+    @DeleteMapping("/docente/")
+    public ResponseEntity<Boolean> eliminarDocentes(@PathVariable Integer idDocentes) {
         boolean isRemoved = docenteservice.delete(idDocentes);
         ResponseEntity<Boolean> objRespuesta = new ResponseEntity<Boolean>(isRemoved, HttpStatus.NO_CONTENT);
         return objRespuesta;

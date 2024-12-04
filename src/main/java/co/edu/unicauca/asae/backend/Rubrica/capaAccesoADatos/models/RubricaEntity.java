@@ -12,13 +12,14 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Entity
+@Table(name= "Rubrica")
 public class RubricaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nomDescriptivo;
-    private int nota;
+    private double nota;
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "rubrica")
     private List<CriteriosDesempenioEntity> criterioDesempenio;
 

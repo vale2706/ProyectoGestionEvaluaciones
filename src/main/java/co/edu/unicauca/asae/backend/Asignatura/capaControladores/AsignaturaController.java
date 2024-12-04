@@ -60,9 +60,9 @@ public class AsignaturaController {
     }
 
     // Eliminar una asignatura
-    @DeleteMapping("/asignatura")
+    @DeleteMapping("/asignatura/{idAsignatura}")
     @PreAuthorize("hasRole('COORDINADOR')")
-    public ResponseEntity<Boolean> eliminarAsignatura(@RequestParam Integer idAsignatura) {
+    public ResponseEntity<Boolean> eliminarAsignatura(@PathVariable Integer idAsignatura) {
         boolean isRemoved = asignaturaService.delete(idAsignatura);
         ResponseEntity<Boolean> objRespuesta = new ResponseEntity<Boolean>(isRemoved, HttpStatus.NO_CONTENT);
         return objRespuesta;

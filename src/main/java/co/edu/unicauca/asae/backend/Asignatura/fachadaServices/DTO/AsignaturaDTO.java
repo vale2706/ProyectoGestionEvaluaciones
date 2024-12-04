@@ -15,8 +15,8 @@ public class AsignaturaDTO {
     private String descripcion;
     private Integer creditos;
     private Integer semestre;
-
-
+    
+    
     public AsignaturaDTO(){
         
     }

@@ -54,8 +54,8 @@ public class NivelDesempenioController {
     }
 
     // Eliminar una nivelDesempenio
-    @DeleteMapping("/nivelDesempenio")
-    public ResponseEntity<Boolean> eliminarNivelDesempenio(@RequestParam Integer idNivelD) {
+    @DeleteMapping("/nivelDesempenio/{idNivelD}")
+    public ResponseEntity<Boolean> eliminarNivelDesempenio(@PathVariable Integer idNivelD) {
         boolean isRemoved = nivelDesempenioService.delete(idNivelD);
         ResponseEntity<Boolean> objRespuesta = new ResponseEntity<Boolean>(isRemoved, HttpStatus.NO_CONTENT);
         return objRespuesta;
