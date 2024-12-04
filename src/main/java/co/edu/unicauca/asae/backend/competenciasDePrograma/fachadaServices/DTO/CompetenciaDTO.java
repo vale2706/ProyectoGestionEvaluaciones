@@ -1,6 +1,8 @@
 package co.edu.unicauca.asae.backend.competenciasDePrograma.fachadaServices.DTO;
 
+import co.edu.unicauca.asae.backend.Asig_Com_Docente.fachadaServices.DTO.Asig_Com_DocenteDTO;
 import co.edu.unicauca.asae.backend.ResultadosAprendizaje.fachadaServices.DTO.ResultadosAprendizajeDTO;
+import co.edu.unicauca.asae.backend.competenciasDePrograma.capaAccesoADatos.models.CompetenciaEntity.Tipo;
 
 import java.util.List;
 
@@ -16,8 +18,15 @@ public class CompetenciaDTO {
     private Integer idcomp;
     private Nivel nivel;
     private String descripcion;
-    private List<ResultadosAprendizajeDTO> resultadosAprendizajes;
-
+    private Integer tblCompId;
+    private Tipo tipo;
+    //private List<ResultadosAprendizajeDTO> resultadosAprendizajes;
+    private List<Asig_Com_DocenteDTO> relaciones;
+    
+    public enum Tipo{
+        Programa,
+        Asignatura 
+    }
     public enum Nivel {
         Basico,
         Intermedio,

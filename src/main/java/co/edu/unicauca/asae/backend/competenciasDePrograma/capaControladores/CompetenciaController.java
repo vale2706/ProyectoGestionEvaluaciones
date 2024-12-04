@@ -18,11 +18,6 @@ public class CompetenciaController {
     @Autowired
     private ICompetenciaServices competenciaServices;
 
-    @GetMapping("/resultados")
-    public List<CompetenciaDTO> listarCompetenciasConResultados() {
-        return competenciaServices.findAllWithResultados();
-    }
-
     @GetMapping("/competencia")
     public ResponseEntity<List<CompetenciaDTO>> obtenerCompetencias() {
         List<CompetenciaDTO> lista = competenciaServices.findAll();
@@ -30,7 +25,7 @@ public class CompetenciaController {
     }
 
     @GetMapping("/competencia/{idComp}")
-    public ResponseEntity<CompetenciaDTO> consultarAsignatura(@PathVariable Integer idComp) {
+    public ResponseEntity<CompetenciaDTO> consultarCompetencia(@PathVariable Integer idComp) {
         CompetenciaDTO objCompetencia = competenciaServices.findById(idComp);
         if (objCompetencia == null) {
             throw new EntidadNoExisteException("competencia con id " + idComp + " no encontrada");
@@ -56,12 +51,5 @@ public class CompetenciaController {
         return new ResponseEntity<>(isRemoved, HttpStatus.NO_CONTENT);
     }
 
-    /*@RestController
-    @RequestMapping("/test")
-    public class TestController {
-        @GetMapping
-        public ResponseEntity<String> test() {
-            return ResponseEntity.ok("¡El servidor funciona correctamente!");
-        }
-    }*/
+
 }

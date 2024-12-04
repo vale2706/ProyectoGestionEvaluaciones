@@ -60,7 +60,9 @@ public class AsignaturaServiceImpl implements IAsignaturaService {
         asignaturaExistente.setDescripcion(asignatura.getDescripcion());
         asignaturaExistente.setCreditos(asignatura.getCreditos());
         asignaturaExistente.setSemestre(asignatura.getSemestre());
-        asignaturaExistente.setCompA(asignatura.getCompA());
+        //if (asignatura.getCompAsignatura()!= null) {
+          //7  asignaturaExistente.setCompAsignatura(asignatura.getCompAsignatura());
+        //}
 
         AsignaturaEntity asignaturaActualizada = servicioAccesoBaseDatos.save(asignaturaExistente);
         return modelMapper.map(asignaturaActualizada, AsignaturaDTO.class);
